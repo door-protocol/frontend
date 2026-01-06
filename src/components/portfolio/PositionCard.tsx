@@ -31,23 +31,27 @@ export default function PositionCard({
 
   return (
     <Card
-      className={
+      className={`border-2 hover:shadow-2xl transition-all duration-500 ease-in-out ${
         isSenior
-          ? 'border-blue-200 dark:border-blue-900'
-          : 'border-orange-200 dark:border-orange-900'
-      }
+          ? 'border-blue-200 dark:border-blue-900 hover:shadow-blue-500/10 bg-gradient-to-br from-blue-50/30 to-transparent dark:from-blue-950/10 dark:to-transparent'
+          : 'border-orange-200 dark:border-orange-900 hover:shadow-orange-500/10 bg-gradient-to-br from-orange-50/30 to-transparent dark:from-orange-950/10 dark:to-transparent'
+      }`}
     >
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            {isSenior ? '🛡️' : '⚔️'}
+          <CardTitle className="flex items-center gap-3 text-xl">
+            <div
+              className={`p-2 rounded-xl ${isSenior ? 'bg-blue-100 dark:bg-blue-950/30' : 'bg-orange-100 dark:bg-orange-950/30'}`}
+            >
+              {isSenior ? '🛡️' : '⚔️'}
+            </div>
             {isSenior ? 'DOOR-FIX (Senior)' : 'DOOR-BOOST (Junior)'}
           </CardTitle>
           <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${
+            className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${
               isSenior
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400'
-                : 'bg-orange-100 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400'
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
+                : 'bg-orange-100 text-orange-700 dark:bg-orange-950/30 dark:text-orange-400'
             }`}
           >
             Active
@@ -55,35 +59,37 @@ export default function PositionCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {/* Balance */}
-        <div>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="p-4 rounded-xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+          <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
             Deposited Amount
           </p>
-          <p className="text-2xl font-bold">${formatNumber(Number(balance))}</p>
+          <p className="text-3xl font-bold">${formatNumber(Number(balance))}</p>
         </div>
 
         {/* Yield */}
-        <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-950/30 dark:to-green-900/20 rounded-xl border-2 border-green-200 dark:border-green-900/50 shadow-lg">
           <div>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1">
               Claimable Yield
             </p>
-            <p className="text-lg font-bold text-green-600 dark:text-green-400">
+            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
               +${formatNumber(Number(claimableYield))}
             </p>
           </div>
-          <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <div className="p-3 rounded-xl bg-green-100 dark:bg-green-900/30">
+            <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
+          </div>
         </div>
 
         {/* APY */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center justify-between p-4 rounded-xl bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+          <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
             {isSenior ? 'Target APY' : 'Current APY'}
           </span>
           <span
-            className={`text-lg font-bold ${
+            className={`text-2xl font-bold ${
               isSenior
                 ? 'text-blue-600 dark:text-blue-400'
                 : 'text-orange-600 dark:text-orange-400'

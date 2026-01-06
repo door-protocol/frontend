@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   title: 'DOOR Protocol - DeFi Fixed Income',
   description:
     'Decentralized Offered Rate protocol. Opening the door to DeFi fixed income with predictable yields.',
+  icons: {
+    icon: '/icon',
+    apple: '/apple-icon',
+  },
 };
 
 export default function RootLayout({

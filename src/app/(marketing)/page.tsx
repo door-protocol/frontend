@@ -11,128 +11,203 @@ import { ArrowRight, Shield, TrendingUp, Lock } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="container flex flex-col items-center justify-center gap-6 pb-8 pt-16 md:pt-24 lg:py-32">
-        <div className="flex max-w-[980px] flex-col items-center gap-4 text-center">
-          <h1 className="text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:text-7xl lg:leading-[1.1]">
+      <section className="relative container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center gap-8 pb-12 pt-20 md:pt-28 lg:py-40 overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-950 dark:via-zinc-950 dark:to-zinc-900 -z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-100/30 via-transparent to-transparent dark:from-zinc-800/10 -z-10" />
+
+        <div className="flex max-w-[1000px] flex-col items-center gap-6 text-center animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 px-4 py-1.5 text-sm backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="text-zinc-700 dark:text-zinc-300">
+              Protocol is Live on Mantle
+            </span>
+          </div>
+
+          <h1 className="text-5xl font-bold leading-tight tracking-tighter md:text-7xl lg:text-8xl lg:leading-[1.1]">
             Opening the Door to{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">
+            <span className="gradient-blue-orange inline-block">
               DeFi Fixed Income
             </span>
           </h1>
-          <p className="max-w-[750px] text-lg text-zinc-600 dark:text-zinc-400 sm:text-xl">
+
+          <p className="max-w-[800px] text-xl text-zinc-600 dark:text-zinc-400 sm:text-2xl leading-relaxed">
             Decentralized Offered Rate protocol. Get predictable yields with
             Senior/Junior tranches powered by Mantle.
           </p>
         </div>
-        <div className="flex gap-4">
+
+        <div
+          className="flex flex-col sm:flex-row gap-4 animate-fade-in-up"
+          style={{ animationDelay: '0.1s' }}
+        >
           <Link href="/deposit">
-            <Button size="lg" className="gap-2">
-              Start Earning <ArrowRight className="h-4 w-4" />
+            <Button
+              size="lg"
+              className="gap-2 text-base px-8 py-6 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
+            >
+              Start Earning <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
           <Link href="/dashboard">
-            <Button size="lg" variant="outline">
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-base px-8 py-6 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+            >
               View Dashboard
             </Button>
           </Link>
         </div>
-        <div className="mt-8 flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
-          <span>Powered by Treehouse DOR</span>
-          <span>•</span>
-          <span>Secured by RWA</span>
-          <span>•</span>
-          <span>Built on Mantle</span>
+
+        <div
+          className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-600 dark:text-zinc-400 animate-fade-in"
+          style={{ animationDelay: '0.2s' }}
+        >
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            <span>Powered by Treehouse DOR</span>
+          </div>
+          <span className="hidden sm:inline">•</span>
+          <div className="flex items-center gap-2">
+            <Lock className="h-4 w-4" />
+            <span>Secured by RWA</span>
+          </div>
+          <span className="hidden sm:inline">•</span>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            <span>Built on Mantle</span>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="container py-16">
-        <h2 className="mb-12 text-center text-3xl font-bold">
-          Why DOOR Protocol?
-        </h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card>
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div className="text-center mb-16 animate-fade-in-up">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Why DOOR Protocol?
+          </h2>
+          <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+            Choose your strategy. Stable income or aggressive growth.
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-3">
+          <Card className="group hover:shadow-xl hover:shadow-blue-500/10 dark:hover:shadow-blue-500/5 transition-all duration-500 ease-in-out border-2 hover:border-blue-200 dark:hover:border-blue-900">
             <CardHeader>
-              <Shield className="h-10 w-10 text-blue-600 dark:text-blue-400 mb-2" />
-              <CardTitle>Stable Returns</CardTitle>
-              <CardDescription>
+              <div className="mb-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <CardTitle className="text-xl">Stable Returns</CardTitle>
+              <CardDescription className="text-base">
                 Senior tranche offers 5-6% target APY with priority yield
                 distribution
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-400">✓</span>{' '}
-                  Priority yield distribution
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 text-xs">
+                      ✓
+                    </span>
+                  </div>
+                  <span>Priority yield distribution</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-400">✓</span>{' '}
-                  Junior buffer protection
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 text-xs">
+                      ✓
+                    </span>
+                  </div>
+                  <span>Junior buffer protection</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-400">✓</span>{' '}
-                  Lower risk profile
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 text-xs">
+                      ✓
+                    </span>
+                  </div>
+                  <span>Lower risk profile</span>
                 </li>
               </ul>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="group hover:shadow-xl hover:shadow-orange-500/10 dark:hover:shadow-orange-500/5 transition-all duration-500 ease-in-out border-2 hover:border-orange-200 dark:hover:border-orange-900">
             <CardHeader>
-              <TrendingUp className="h-10 w-10 text-orange-600 dark:text-orange-400 mb-2" />
-              <CardTitle>High Yield Potential</CardTitle>
-              <CardDescription>
+              <div className="mb-4 p-3 rounded-xl bg-orange-50 dark:bg-orange-950/30 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                <TrendingUp className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+              </div>
+              <CardTitle className="text-xl">High Yield Potential</CardTitle>
+              <CardDescription className="text-base">
                 Junior tranche targets 15-30% APY with leverage effect
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <span className="text-orange-600 dark:text-orange-400">
-                    ⚡
-                  </span>{' '}
-                  Excess yield concentration
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                    <span className="text-orange-600 dark:text-orange-400 text-xs">
+                      ⚡
+                    </span>
+                  </div>
+                  <span>Excess yield concentration</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-orange-600 dark:text-orange-400">
-                    ⚡
-                  </span>{' '}
-                  Leverage without liquidation
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                    <span className="text-orange-600 dark:text-orange-400 text-xs">
+                      ⚡
+                    </span>
+                  </div>
+                  <span>Leverage without liquidation</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-orange-600 dark:text-orange-400">
-                    ⚡
-                  </span>{' '}
-                  Higher risk, higher reward
+                <li className="flex items-center gap-3">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                    <span className="text-orange-600 dark:text-orange-400 text-xs">
+                      ⚡
+                    </span>
+                  </div>
+                  <span>Higher risk, higher reward</span>
                 </li>
               </ul>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="group hover:shadow-xl hover:shadow-zinc-500/10 dark:hover:shadow-zinc-500/5 transition-all duration-500 ease-in-out border-2 hover:border-zinc-200 dark:hover:border-zinc-700">
             <CardHeader>
-              <Lock className="h-10 w-10 text-zinc-600 dark:text-zinc-400 mb-2" />
-              <CardTitle>DOR Infrastructure</CardTitle>
-              <CardDescription>
+              <div className="mb-4 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                <Lock className="h-8 w-8 text-zinc-600 dark:text-zinc-400" />
+              </div>
+              <CardTitle className="text-xl">DOR Infrastructure</CardTitle>
+              <CardDescription className="text-base">
                 First decentralized benchmark rate for DeFi
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-center gap-2">
-                  <span className="text-zinc-600 dark:text-zinc-400">📊</span>{' '}
-                  Transparent on-chain oracle
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center gap-3">
+                  <span className="text-zinc-600 dark:text-zinc-400 text-lg">
+                    📊
+                  </span>
+                  <span>Transparent on-chain oracle</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-zinc-600 dark:text-zinc-400">🔗</span>{' '}
-                  Multi-source aggregation
+                <li className="flex items-center gap-3">
+                  <span className="text-zinc-600 dark:text-zinc-400 text-lg">
+                    🔗
+                  </span>
+                  <span>Multi-source aggregation</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-zinc-600 dark:text-zinc-400">🌐</span>{' '}
-                  Open infrastructure
+                <li className="flex items-center gap-3">
+                  <span className="text-zinc-600 dark:text-zinc-400 text-lg">
+                    🌐
+                  </span>
+                  <span>Open infrastructure</span>
                 </li>
               </ul>
             </CardContent>
@@ -141,33 +216,37 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="container py-16 border-t dark:border-zinc-800">
-        <div className="grid gap-8 md:grid-cols-4 text-center">
-          <div>
-            <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t dark:border-zinc-800">
+        <div className="grid gap-12 md:grid-cols-4 text-center">
+          <div className="group">
+            <div className="text-5xl md:text-6xl font-bold text-blue-600 dark:text-blue-400 mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
               5.5%
             </div>
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
               Senior Target APY
             </div>
           </div>
-          <div>
-            <div className="text-4xl font-bold text-orange-600 dark:text-orange-400">
+          <div className="group">
+            <div className="text-5xl md:text-6xl font-bold text-orange-600 dark:text-orange-400 mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
               15-30%
             </div>
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
               Junior Target APY
             </div>
           </div>
-          <div>
-            <div className="text-4xl font-bold">$1.25M</div>
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="group">
+            <div className="text-5xl md:text-6xl font-bold mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
+              $1.25M
+            </div>
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
               Total Value Locked
             </div>
           </div>
-          <div>
-            <div className="text-4xl font-bold">4.62%</div>
-            <div className="text-sm text-zinc-600 dark:text-zinc-400">
+          <div className="group">
+            <div className="text-5xl md:text-6xl font-bold mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
+              4.62%
+            </div>
+            <div className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
               Current DOR Rate
             </div>
           </div>
@@ -175,18 +254,27 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="container py-16">
-        <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Start Earning?</h2>
-          <p className="text-zinc-600 dark:text-zinc-400 mb-6 max-w-2xl mx-auto">
-            Join DOOR Protocol and choose between stable returns or high-yield
-            opportunities. Connect your wallet to get started.
-          </p>
-          <Link href="/deposit">
-            <Button size="lg" className="gap-2">
-              Deposit Now <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div className="relative rounded-2xl border-2 border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 p-12 md:p-16 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-200/30 via-transparent to-transparent dark:from-zinc-700/10 -z-10" />
+
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Ready to Start Earning?
+            </h2>
+            <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+              Join DOOR Protocol and choose between stable returns or high-yield
+              opportunities. Connect your wallet to get started.
+            </p>
+            <Link href="/deposit">
+              <Button
+                size="lg"
+                className="gap-2 text-lg px-10 py-7 shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/40 transition-all"
+              >
+                Deposit Now <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

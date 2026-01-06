@@ -32,16 +32,21 @@ export default function DepositInput({
   };
 
   return (
-    <Card>
+    <Card className="border-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-500 ease-in-out">
       <CardContent className="p-6">
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Label */}
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Deposit Amount</label>
+            <label className="text-base font-bold flex items-center gap-2">
+              <span className="text-xl">💵</span>
+              Deposit Amount
+            </label>
             {balance > 0 && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Balance: {formatNumber(balance)} USDT
-              </p>
+              <div className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  Balance: {formatNumber(balance)} USDT
+                </p>
+              </div>
             )}
           </div>
 
@@ -52,14 +57,14 @@ export default function DepositInput({
               placeholder="0.00"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              className="text-2xl h-14 pr-20"
+              className="text-3xl h-16 pr-24 font-bold border-2 focus:ring-4 focus:ring-blue-500/20 transition-all"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleMaxClick}
-                className="text-blue-600 dark:text-blue-400 font-medium"
+                className="text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-blue-950/30 px-4"
               >
                 MAX
               </Button>
@@ -67,14 +72,14 @@ export default function DepositInput({
           </div>
 
           {/* Quick Amount Buttons */}
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-3">
             {[25, 50, 75, 100].map((percent) => (
               <Button
                 key={percent}
                 variant="outline"
                 size="sm"
                 onClick={() => handlePercentClick(percent)}
-                className="text-xs"
+                className="font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {percent}%
               </Button>
@@ -83,13 +88,15 @@ export default function DepositInput({
 
           {/* Estimated Return */}
           {value && Number(value) > 0 && (
-            <div className="p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg space-y-1">
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                Estimated return (annual)
+            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 rounded-xl border-2 border-blue-200 dark:border-blue-900/50 space-y-2 animate-fade-in-up">
+              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                Estimated Annual Return
               </p>
-              <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 +${formatNumber(Number(value) * (apy / 100))}{' '}
-                <span className="text-sm font-normal">({apy}% APY)</span>
+                <span className="text-base font-medium text-zinc-600 dark:text-zinc-400">
+                  ({apy}% APY)
+                </span>
               </p>
             </div>
           )}

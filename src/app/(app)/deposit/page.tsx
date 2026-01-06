@@ -28,22 +28,31 @@ export default function DepositPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Deposit Funds</h1>
-        <p className="text-zinc-600 dark:text-zinc-400 mt-2">
-          Choose your tranche and deposit USDT to start earning
+    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+      <div className="text-center">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-3">
+          Deposit Funds
+        </h1>
+        <p className="text-lg text-zinc-600 dark:text-zinc-400">
+          Choose your strategy and deposit USDT to start earning
         </p>
       </div>
 
       {/* Warning - Connect Wallet */}
       {!isConnected && (
-        <Card className="border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950/20">
-          <CardContent className="p-4 flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
-            <p className="text-sm text-orange-900 dark:text-orange-400">
-              Please connect your wallet to deposit funds
-            </p>
+        <Card className="border-2 border-orange-200 dark:border-orange-900 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 shadow-lg">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-900/30">
+              <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+            </div>
+            <div>
+              <p className="font-semibold text-orange-900 dark:text-orange-400 mb-1">
+                Wallet Not Connected
+              </p>
+              <p className="text-sm text-orange-800 dark:text-orange-400/80">
+                Please connect your wallet to deposit funds and start earning
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -68,30 +77,35 @@ export default function DepositPage() {
 
       {/* Deposit Summary */}
       {amount && Number(amount) > 0 && (
-        <Card>
-          <CardContent className="p-4 space-y-2">
-            <h3 className="font-semibold">Deposit Summary</h3>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">
+        <Card className="border-2 border-zinc-200 dark:border-zinc-800 shadow-xl animate-fade-in-up">
+          <CardContent className="p-6 space-y-4">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+              <span className="text-xl">📋</span>
+              Deposit Summary
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900">
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Tranche
                 </span>
-                <span className="font-medium">
+                <span className="font-bold">
                   {selectedTranche === 'senior'
                     ? '🛡️ Senior (DOOR-FIX)'
                     : '⚔️ Junior (DOOR-BOOST)'}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">Amount</span>
-                <span className="font-medium">{amount} USDT</span>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900">
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                  Amount
+                </span>
+                <span className="font-bold text-lg">{amount} USDT</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900">
+                <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                   Target APY
                 </span>
                 <span
-                  className={`font-medium ${
+                  className={`font-bold text-lg ${
                     selectedTranche === 'senior'
                       ? 'text-blue-600 dark:text-blue-400'
                       : 'text-orange-600 dark:text-orange-400'
@@ -111,30 +125,47 @@ export default function DepositPage() {
       <Button
         onClick={handleDeposit}
         disabled={!isConnected || !amount || Number(amount) <= 0}
-        className="w-full"
+        className={`w-full text-lg py-7 shadow-2xl ${
+          selectedTranche === 'senior'
+            ? 'shadow-blue-500/30 hover:shadow-blue-500/40'
+            : 'shadow-orange-500/30 hover:shadow-orange-500/40'
+        }`}
         size="lg"
       >
         {isConnected ? 'Deposit Now' : 'Connect Wallet to Deposit'}
       </Button>
 
       {/* Info */}
-      <Card className="border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/20">
-        <CardContent className="p-4 space-y-2 text-sm">
-          <h4 className="font-semibold text-blue-900 dark:text-blue-400">
+      <Card className="border-2 border-blue-200 dark:border-blue-900 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/20 dark:to-blue-900/10 shadow-lg">
+        <CardContent className="p-6 space-y-3">
+          <h4 className="font-bold text-lg text-blue-900 dark:text-blue-400 flex items-center gap-2">
+            <span className="text-xl">ℹ️</span>
             Important Information
           </h4>
-          <ul className="space-y-1 text-blue-800 dark:text-blue-300">
-            <li>
-              • Deposits are processed at the start of each Epoch (7 days)
+          <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-300">
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+              <span>
+                Deposits are processed at the start of each Epoch (7 days)
+              </span>
             </li>
-            <li>
-              • Target APY is indicative and may vary based on market conditions
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+              <span>
+                Target APY is indicative and may vary based on market conditions
+              </span>
             </li>
-            <li>
-              • Junior tranche bears first loss in case of vault
-              underperformance
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+              <span>
+                Junior tranche bears first loss in case of vault
+                underperformance
+              </span>
             </li>
-            <li>• Senior tranche has priority claim on yields</li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+              <span>Senior tranche has priority claim on yields</span>
+            </li>
           </ul>
         </CardContent>
       </Card>

@@ -59,23 +59,27 @@ export default function EpochTimer({
   };
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+    <Card className="border-2 hover:shadow-xl transition-all">
+      <CardContent className="p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-800">
+              <Clock className="h-6 w-6 text-zinc-700 dark:text-zinc-300" />
+            </div>
             <div>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-1">
                 Epoch #{currentEpoch}
               </p>
-              <p className="font-medium">{timeLeft}</p>
+              <p className="text-2xl font-bold">{timeLeft}</p>
             </div>
           </div>
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${stateColors[epochState]}`}
-          >
-            {stateLabels[epochState]}
-          </span>
+          <div className="flex items-center gap-3">
+            <span
+              className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${stateColors[epochState]}`}
+            >
+              {stateLabels[epochState]}
+            </span>
+          </div>
         </div>
       </CardContent>
     </Card>
