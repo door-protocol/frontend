@@ -27,9 +27,10 @@ export function Providers({ children }: { children: ReactNode }) {
               borderRadius: 'medium',
             }),
             darkMode: darkTheme({
-              accentColor: '#fafafa',
-              accentColorForeground: '#18181b',
+              accentColor: '#3b82f6',
+              accentColorForeground: '#ffffff',
               borderRadius: 'medium',
+              overlayBlur: 'small',
             }),
           }}
         >
