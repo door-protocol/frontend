@@ -1,0 +1,38 @@
+/**
+ * DOOR Protocol - Contract Addresses
+ */
+
+// Mantle Testnet Addresses (Placeholder)
+export const CORE_VAULT_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const SENIOR_TRANCHE_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const JUNIOR_TRANCHE_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const EPOCH_MANAGER_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const RATE_ORACLE_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const DOOR_FIX_TOKEN_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const DOOR_BOOST_TOKEN_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const SAFETY_MODULE_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const VAULT_STRATEGY_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+
+// Asset Addresses (Placeholder)
+export const USDT_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const METH_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+export const RWA_ADDRESS =
+  '0x0000000000000000000000000000000000000000' as const;
+
+// ABIs will be imported from compiled contracts
+// For now, using minimal ABIs for mock purposes
+export const CORE_VAULT_ABI = [] as const;
+export const SENIOR_TRANCHE_ABI = [] as const;
+export const JUNIOR_TRANCHE_ABI = [] as const;
+export const EPOCH_MANAGER_ABI = [] as const;
