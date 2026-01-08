@@ -19,7 +19,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-zinc-200 border-zinc-700 bg-background mt-16">
+    <footer className="border-t bg-background mt-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 gap-8 md:gap-x-12 md:grid-cols-6">
           {/* Brand */}
@@ -31,18 +31,16 @@ export function Footer() {
                 viewBox="0 0 32 32"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-8 h-8 text-zinc-900 text-white"
+                className="w-8 h-8 text-foreground"
               >
                 <path
                   d="M7 6 L7 26 L16 26 C22.5 26 26 22.5 26 16 C26 9.5 22.5 6 16 6 L7 6 Z M11 10 L16 10 C19.5 10 22 12.5 22 16 C22 19.5 19.5 22 16 22 L11 22 L11 10 Z"
                   fill="currentColor"
                 />
               </svg>
-              <span className="font-bold text-zinc-900 text-white">
-                DOOR Protocol
-              </span>
+              <span className="font-bold text-foreground">DOOR Protocol</span>
             </div>
-            <p className="text-sm text-zinc-600 text-zinc-300 leading-relaxed max-w-sm md:max-w-none">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm md:max-w-none">
               Opening the door to DeFi fixed income. Decentralized Offered Rate
               infrastructure powered by Mantle.
             </p>
@@ -54,7 +52,7 @@ export function Footer() {
               key={category}
               className="space-y-3 text-center md:text-left md:col-span-1"
             >
-              <h4 className="text-sm font-semibold text-zinc-900 text-white">
+              <h4 className="text-sm font-semibold text-foreground">
                 {category}
               </h4>
               <ul className="space-y-2">
@@ -62,7 +60,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-zinc-600 transition-colors hover:text-zinc-900 text-zinc-300 hover:text-white cursor-pointer"
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
                     >
                       {link.label}
                     </Link>
@@ -74,16 +72,16 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-10 border-t border-zinc-200 pt-6 border-zinc-700">
+        <div className="mt-10 border-t pt-6">
           <div className="flex flex-col items-center justify-center gap-3 text-center">
-            <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-zinc-600 text-zinc-300">
+            <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground">
               <span>Powered by Treehouse DOR</span>
               <span>•</span>
               <span>Secured by RWA</span>
               <span>•</span>
               <span>Built on Mantle</span>
             </div>
-            <p className="text-sm text-zinc-500 text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               © 2026 DOOR Protocol. All rights reserved.
             </p>
           </div>

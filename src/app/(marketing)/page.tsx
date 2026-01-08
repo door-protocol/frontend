@@ -15,17 +15,17 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center gap-8 pb-12 pt-20 md:pt-28 lg:py-40 overflow-hidden">
         {/* Background gradient */}
-        <div className="absolute inset-0 bg-linear-to-br from-zinc-50/50 via-background to-zinc-100/50 from-background via-background to-background -z-10" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-100/20 via-transparent to-transparent from-blue-500/10 via-transparent to-transparent -z-10" />
+        <div className="absolute inset-0 bg-linear-to-br from-zinc-50/50 dark:from-zinc-900/50 via-background to-zinc-100/50 dark:to-zinc-800/50 -z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-zinc-100/20 dark:from-zinc-900/20 via-transparent to-transparent -z-10" />
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center gap-8">
-          <div className="flex max-w-[1000px] flex-col items-center gap-6 text-center animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 border-zinc-600 bg-zinc-50/50 bg-zinc-700/50 px-4 py-1.5 text-sm backdrop-blur-sm">
+          <div className="flex max-w-250 flex-col items-center gap-6 text-center animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 text-sm backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              <span className="text-zinc-700 text-zinc-300">
+              <span className="text-muted-foreground">
                 Protocol is Live on Mantle
               </span>
             </div>
@@ -37,7 +37,7 @@ export default function Home() {
               </span>
             </h1>
 
-            <p className="max-w-[800px] text-xl text-zinc-600 text-zinc-300 sm:text-2xl leading-relaxed">
+            <p className="max-w-200 text-xl text-muted-foreground sm:text-2xl leading-relaxed">
               Decentralized Offered Rate protocol. Get predictable yields with
               Senior/Junior tranches powered by Mantle.
             </p>
@@ -67,7 +67,7 @@ export default function Home() {
           </div>
 
           <div
-            className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-600 text-zinc-300 animate-fade-in"
+            className="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground animate-fade-in"
             style={{ animationDelay: '0.2s' }}
           >
             <div className="flex items-center gap-2">
@@ -94,16 +94,16 @@ export default function Home() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Why DOOR Protocol?
           </h2>
-          <p className="text-lg text-zinc-600 text-zinc-300 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Choose your strategy. Stable income or aggressive growth.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
-          <Card className="group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 ease-in-out border-2 hover:border-blue-200 hover:border-blue-500/50">
+          <Card className="group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500 ease-in-out border-2 hover:border-blue-300 dark:hover:border-blue-700">
             <CardHeader>
-              <div className="mb-4 p-3 rounded-xl bg-blue-50 bg-blue-500/10 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
-                <Shield className="h-8 w-8 text-blue-600 text-blue-400" />
+              <div className="mb-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
               </div>
               <CardTitle className="text-xl">Stable Returns</CardTitle>
               <CardDescription className="text-base">
@@ -114,24 +114,24 @@ export default function Home() {
             <CardContent>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 bg-green-500/20 flex items-center justify-center">
-                    <span className="text-green-600 text-green-400 text-xs">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 text-xs">
                       ✓
                     </span>
                   </div>
                   <span>Priority yield distribution</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 bg-green-500/20 flex items-center justify-center">
-                    <span className="text-green-600 text-green-400 text-xs">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 text-xs">
                       ✓
                     </span>
                   </div>
                   <span>Junior buffer protection</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 bg-green-500/20 flex items-center justify-center">
-                    <span className="text-green-600 text-green-400 text-xs">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                    <span className="text-green-600 dark:text-green-400 text-xs">
                       ✓
                     </span>
                   </div>
@@ -141,10 +141,10 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="group hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-500 ease-in-out border-2 hover:border-orange-200 hover:border-purple-500/50">
+          <Card className="group hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-500 ease-in-out border-2 hover:border-orange-300 dark:hover:border-purple-700">
             <CardHeader>
-              <div className="mb-4 p-3 rounded-xl bg-orange-50 bg-purple-500/10 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
-                <TrendingUp className="h-8 w-8 text-orange-600 text-purple-400" />
+              <div className="mb-4 p-3 rounded-xl bg-purple-50 dark:bg-purple-950/30 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                <TrendingUp className="h-8 w-8 text-orange-600 dark:text-purple-400" />
               </div>
               <CardTitle className="text-xl">High Yield Potential</CardTitle>
               <CardDescription className="text-base">
@@ -154,24 +154,24 @@ export default function Home() {
             <CardContent>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 bg-purple-500/20 flex items-center justify-center">
-                    <span className="text-orange-600 text-purple-400 text-xs">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/30 flex items-center justify-center">
+                    <span className="text-orange-600 dark:text-purple-400 text-xs">
                       ⚡
                     </span>
                   </div>
                   <span>Excess yield concentration</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 bg-purple-500/20 flex items-center justify-center">
-                    <span className="text-orange-600 text-purple-400 text-xs">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/30 flex items-center justify-center">
+                    <span className="text-orange-600 dark:text-purple-400 text-xs">
                       ⚡
                     </span>
                   </div>
                   <span>Leverage without liquidation</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 bg-purple-500/20 flex items-center justify-center">
-                    <span className="text-orange-600 text-purple-400 text-xs">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-950/30 flex items-center justify-center">
+                    <span className="text-orange-600 dark:text-purple-400 text-xs">
                       ⚡
                     </span>
                   </div>
@@ -181,10 +181,10 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="group hover:shadow-xl transition-all duration-500 ease-in-out border-2 hover:border-zinc-200 hover:border-zinc-600">
+          <Card className="group hover:shadow-xl transition-all duration-500 ease-in-out border-2 hover:border-border">
             <CardHeader>
-              <div className="mb-4 p-3 rounded-xl bg-zinc-50 bg-zinc-700 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
-                <Lock className="h-8 w-8 text-zinc-600 text-zinc-300" />
+              <div className="mb-4 p-3 rounded-xl bg-secondary w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
+                <Lock className="h-8 w-8 text-muted-foreground" />
               </div>
               <CardTitle className="text-xl">DOR Infrastructure</CardTitle>
               <CardDescription className="text-base">
@@ -194,21 +194,15 @@ export default function Home() {
             <CardContent>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center gap-3">
-                  <span className="text-zinc-600 text-zinc-400 text-lg">
-                    📊
-                  </span>
+                  <span className="text-muted-foreground text-lg">📊</span>
                   <span>Transparent on-chain oracle</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-zinc-600 text-zinc-400 text-lg">
-                    🔗
-                  </span>
+                  <span className="text-muted-foreground text-lg">🔗</span>
                   <span>Multi-source aggregation</span>
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="text-zinc-600 text-zinc-400 text-lg">
-                    🌐
-                  </span>
+                  <span className="text-muted-foreground text-lg">🌐</span>
                   <span>Open infrastructure</span>
                 </li>
               </ul>
@@ -218,21 +212,21 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 border-t border-zinc-700">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 border-t border-border">
         <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-2 md:grid-cols-4 text-center">
           <div className="group">
-            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-600 text-blue-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
+            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-600 dark:text-blue-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
               5.5%
             </div>
-            <div className="text-xs sm:text-sm font-medium text-zinc-600 text-zinc-300">
+            <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Senior Target APY
             </div>
           </div>
           <div className="group">
-            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-600 text-purple-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
+            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-600 dark:text-purple-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
               15-30%
             </div>
-            <div className="text-xs sm:text-sm font-medium text-zinc-600 text-zinc-300">
+            <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Junior Target APY
             </div>
           </div>
@@ -240,7 +234,7 @@ export default function Home() {
             <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out text-white">
               $1.25M
             </div>
-            <div className="text-xs sm:text-sm font-medium text-zinc-600 text-zinc-300">
+            <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Total Value Locked
             </div>
           </div>
@@ -248,7 +242,7 @@ export default function Home() {
             <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out text-white">
               4.62%
             </div>
-            <div className="text-xs sm:text-sm font-medium text-zinc-600 text-zinc-300">
+            <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Current DOR Rate
             </div>
           </div>
@@ -257,14 +251,14 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-        <div className="relative rounded-2xl border-2 border-zinc-200 border-zinc-700 bg-linear-to-br from-zinc-50 via-zinc-50 to-zinc-100 from-zinc-800 via-zinc-800 to-zinc-800 p-12 md:p-16 text-center overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-200/30 via-transparent to-transparent from-blue-500/5 via-transparent to-transparent -z-10" />
+        <div className="relative rounded-2xl border-2 border-border bg-linear-to-br from-secondary via-secondary to-secondary p-12 md:p-16 text-center overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-zinc-200/30 dark:from-zinc-800/30 via-transparent to-transparent -z-10" />
 
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Ready to Start Earning?
             </h2>
-            <p className="text-lg md:text-xl text-zinc-600 text-zinc-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
               Join DOOR Protocol and choose between stable returns or high-yield
               opportunities. Connect your wallet to get started.
             </p>

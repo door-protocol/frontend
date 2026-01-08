@@ -8,7 +8,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-md hover:shadow-lg transition-all duration-500 ease-in-out border-zinc-600 bg-zinc-800/80 text-white hover:border-blue-500/50',
+      'rounded-xl border bg-card text-card-foreground shadow-md hover:shadow-lg transition-all duration-500 ease-in-out',
       className,
     )}
     {...props}
@@ -49,7 +49,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-zinc-600 text-zinc-300', className)}
+    className={cn('text-sm text-muted-foreground', className)}
     {...props}
   />
 ));

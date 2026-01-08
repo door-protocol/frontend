@@ -51,11 +51,11 @@ export default function EpochTimer({
 
   const stateColors = {
     [EpochState.OPEN]:
-      'bg-green-100 text-green-700 bg-green-950/20 text-green-400',
+      'bg-green-100 text-green-700 dark:bg-green-950/20 dark:text-green-400',
     [EpochState.LOCKED]:
-      'bg-yellow-100 text-yellow-700 bg-yellow-950/20 text-yellow-400',
+      'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/20 dark:text-yellow-400',
     [EpochState.SETTLED]:
-      'bg-blue-100 text-blue-700 bg-blue-950/20 text-blue-400',
+      'bg-blue-100 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400',
   };
 
   return (
@@ -63,11 +63,11 @@ export default function EpochTimer({
       <CardContent className="p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-zinc-100 bg-zinc-800">
-              <Clock className="h-6 w-6 text-zinc-700 text-zinc-300" />
+            <div className="p-3 rounded-xl bg-secondary">
+              <Clock className="h-6 w-6 text-secondary-foreground" />
             </div>
             <div>
-              <p className="text-sm font-medium text-zinc-600 text-zinc-400 mb-1">
+              <p className="text-sm font-medium text-muted-foreground mb-1">
                 Epoch #{currentEpoch}
               </p>
               <p className="text-2xl font-bold">{timeLeft}</p>

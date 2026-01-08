@@ -21,7 +21,7 @@ export default function AnalyticsPage() {
     <div className="max-w-6xl mx-auto space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Analytics</h1>
-        <p className="text-zinc-600 text-muted-foreground mt-2">
+        <p className="text-muted-foreground mt-2">
           Track historical performance and metrics
         </p>
       </div>
@@ -34,18 +34,15 @@ export default function AnalyticsPage() {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={rateHistory}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                className="stroke-zinc-200 stroke-border"
-              />
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis
                 dataKey="date"
                 tick={{ fontSize: 12 }}
-                className="text-zinc-600 text-muted-foreground"
+                className="text-muted-foreground"
               />
               <YAxis
                 tick={{ fontSize: 12 }}
-                className="text-zinc-600 text-muted-foreground"
+                className="text-muted-foreground"
               />
               <Tooltip
                 contentStyle={{
@@ -90,26 +87,20 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-zinc-600 text-muted-foreground">
-                Average Senior APY
-              </span>
-              <span className="font-medium text-blue-600 text-primary">
+              <span className="text-muted-foreground">Average Senior APY</span>
+              <span className="font-medium text-blue-600 dark:text-blue-400 ">
                 {formatNumber(5.52)}%
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-600 text-muted-foreground">
-                Average Junior APY
-              </span>
-              <span className="font-medium text-orange-600 text-accent">
+              <span className="text-muted-foreground">Average Junior APY</span>
+              <span className="font-medium text-orange-600 dark:text-orange-400 ">
                 {formatNumber(18.15)}%
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-600 text-muted-foreground">
-                Average Vault APY
-              </span>
-              <span className="font-medium text-green-600 text-green-400">
+              <span className="text-muted-foreground">Average Vault APY</span>
+              <span className="font-medium text-green-600 dark:text-green-400">
                 {formatNumber(7.05)}%
               </span>
             </div>
@@ -122,23 +113,17 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-zinc-600 text-muted-foreground">
-                Junior Buffer
-              </span>
-              <span className="font-medium text-green-600 text-green-400">
+              <span className="text-muted-foreground">Junior Buffer</span>
+              <span className="font-medium text-green-600 dark:text-green-400">
                 25.0% (Healthy)
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-600 text-muted-foreground">
-                Senior Coverage
-              </span>
+              <span className="text-muted-foreground">Senior Coverage</span>
               <span className="font-medium">100%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-600 text-muted-foreground">
-                Protocol Fee
-              </span>
+              <span className="text-muted-foreground">Protocol Fee</span>
               <span className="font-medium">1.0%</span>
             </div>
           </CardContent>
@@ -155,14 +140,12 @@ export default function AnalyticsPage() {
             {/* Senior */}
             <div>
               <div className="flex justify-between mb-2 text-sm">
-                <span className="text-zinc-600 text-muted-foreground">
-                  🛡️ Senior Tranche
-                </span>
+                <span className="text-muted-foreground">🛡️ Senior Tranche</span>
                 <span className="font-medium">$937,500 (75%)</span>
               </div>
-              <div className="h-3 bg-zinc-200 bg-muted rounded-full overflow-hidden">
+              <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 bg-primary"
+                  className="h-full bg-blue-500 dark:bg-blue-600 "
                   style={{ width: '75%' }}
                 />
               </div>
@@ -171,14 +154,12 @@ export default function AnalyticsPage() {
             {/* Junior */}
             <div>
               <div className="flex justify-between mb-2 text-sm">
-                <span className="text-zinc-600 text-muted-foreground">
-                  ⚔️ Junior Tranche
-                </span>
+                <span className="text-muted-foreground">⚔️ Junior Tranche</span>
                 <span className="font-medium">$312,500 (25%)</span>
               </div>
-              <div className="h-3 bg-zinc-200 bg-muted rounded-full overflow-hidden">
+              <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-orange-500 bg-accent"
+                  className="h-full bg-orange-500 dark:bg-orange-600 "
                   style={{ width: '25%' }}
                 />
               </div>
