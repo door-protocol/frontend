@@ -19,11 +19,11 @@ export default function PortfolioPage() {
     return (
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Portfolio</h1>
-        <Card className="border-orange-200 dark:border-accent/30 bg-orange-50 dark:bg-card">
+        <Card className="border-orange-200 border-accent/30 bg-orange-50 bg-card">
           <CardContent className="p-8 text-center">
-            <Wallet className="h-12 w-12 mx-auto text-orange-600 dark:text-accent mb-4" />
+            <Wallet className="h-12 w-12 mx-auto text-orange-600 text-accent mb-4" />
             <h3 className="text-lg font-semibold mb-2">Wallet Not Connected</h3>
-            <p className="text-sm text-zinc-600 dark:text-muted-foreground">
+            <p className="text-sm text-zinc-600 text-muted-foreground">
               Please connect your wallet to view your portfolio
             </p>
           </CardContent>
@@ -37,12 +37,12 @@ export default function PortfolioPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Portfolio</h1>
-          <p className="text-zinc-600 dark:text-muted-foreground mt-2">
+          <p className="text-zinc-600 text-muted-foreground mt-2">
             {address?.slice(0, 6)}...{address?.slice(-4)}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-zinc-600 dark:text-muted-foreground">
+          <p className="text-sm text-zinc-600 text-muted-foreground">
             Total Value
           </p>
           <p className="text-3xl font-bold">
@@ -53,14 +53,14 @@ export default function PortfolioPage() {
 
       {/* Info Alert */}
       {!hasSeniorPosition && !hasJuniorPosition && (
-        <Card className="border-blue-200 dark:border-primary/30 bg-blue-50 dark:bg-card">
+        <Card className="border-blue-200 border-primary/30 bg-blue-50 bg-card">
           <CardContent className="p-4 flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 dark:text-primary flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 text-blue-600 text-primary flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-blue-900 dark:text-primary">
+              <p className="text-sm font-medium text-blue-900 text-primary">
                 No Active Positions
               </p>
-              <p className="text-xs text-blue-800 dark:text-muted-foreground">
+              <p className="text-xs text-blue-800 text-muted-foreground">
                 Make your first deposit to start earning
               </p>
             </div>
@@ -99,7 +99,7 @@ export default function PortfolioPage() {
             <h3 className="font-semibold mb-4">Portfolio Summary</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">
+                <span className="text-zinc-600 text-zinc-400">
                   Total Deposited
                 </span>
                 <span className="font-medium">
@@ -111,10 +111,10 @@ export default function PortfolioPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-600 dark:text-zinc-400">
+                <span className="text-zinc-600 text-zinc-400">
                   Total Claimable Yield
                 </span>
-                <span className="font-medium text-green-600 dark:text-green-400">
+                <span className="font-medium text-green-600 text-green-400">
                   +$
                   {formatNumber(
                     Number(position.senior.claimableYield) +
@@ -122,7 +122,7 @@ export default function PortfolioPage() {
                   )}
                 </span>
               </div>
-              <div className="flex justify-between pt-2 border-t dark:border-zinc-800">
+              <div className="flex justify-between pt-2 border-t border-zinc-800">
                 <span className="font-medium">Total Value</span>
                 <span className="font-bold">
                   ${formatNumber(Number(position.totalValue))}

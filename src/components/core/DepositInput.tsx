@@ -32,7 +32,7 @@ export default function DepositInput({
   };
 
   return (
-    <Card className="border-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-500 ease-in-out">
+    <Card className="border-2 hover:border-zinc-300 hover:border-zinc-700 transition-all duration-500 ease-in-out">
       <CardContent className="p-6">
         <div className="space-y-5">
           {/* Label */}
@@ -42,8 +42,8 @@ export default function DepositInput({
               Deposit Amount
             </label>
             {balance > 0 && (
-              <div className="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800">
-                <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <div className="px-3 py-1 rounded-full bg-zinc-100 bg-zinc-800">
+                <p className="text-sm font-medium text-zinc-700 text-zinc-300">
                   Balance: {formatNumber(balance)} USDT
                 </p>
               </div>
@@ -64,7 +64,7 @@ export default function DepositInput({
                 variant="ghost"
                 size="sm"
                 onClick={handleMaxClick}
-                className="text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-blue-950/30 px-4"
+                className="text-blue-600 text-blue-400 font-bold hover:bg-blue-50 hover:bg-blue-950/30 px-4"
               >
                 MAX
               </Button>
@@ -79,7 +79,7 @@ export default function DepositInput({
                 variant="outline"
                 size="sm"
                 onClick={() => handlePercentClick(percent)}
-                className="font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400"
+                className="font-semibold hover:bg-blue-50 hover:bg-blue-950/30 hover:border-blue-300 hover:border-blue-700 hover:text-blue-600 hover:text-blue-400"
               >
                 {percent}%
               </Button>
@@ -88,13 +88,13 @@ export default function DepositInput({
 
           {/* Estimated Return */}
           {value && Number(value) > 0 && (
-            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/30 dark:to-blue-900/20 rounded-xl border-2 border-blue-200 dark:border-blue-900/50 space-y-2 animate-fade-in-up">
-              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            <div className="p-4 bg-linear-to-br from-blue-50 to-blue-100/50 from-blue-950/30 to-blue-900/20 rounded-xl border-2 border-blue-200 border-blue-900/50 space-y-2 animate-fade-in-up">
+              <p className="text-sm font-medium text-zinc-600 text-zinc-400">
                 Estimated Annual Return
               </p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <p className="text-2xl font-bold text-blue-600 text-blue-400">
                 +${formatNumber(Number(value) * (apy / 100))}{' '}
-                <span className="text-base font-medium text-zinc-600 dark:text-zinc-400">
+                <span className="text-base font-medium text-zinc-600 text-zinc-400">
                   ({apy}% APY)
                 </span>
               </p>

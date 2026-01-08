@@ -8,16 +8,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-zinc-900 text-zinc-50 hover:bg-zinc-800 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 shadow-lg hover:shadow-xl',
+          'bg-zinc-900 text-white hover:bg-zinc-800 shadow-lg hover:shadow-xl bg-blue-600 text-white hover:bg-blue-700',
         destructive:
-          'bg-red-500 text-zinc-50 hover:bg-red-600 dark:bg-red-600 dark:text-zinc-50 dark:hover:bg-red-700 shadow-lg hover:shadow-xl shadow-red-500/20',
+          'bg-red-500 text-white hover:bg-red-600 shadow-lg hover:shadow-xl bg-red-600 text-white hover:bg-red-700',
         outline:
-          'border-2 border-zinc-200 bg-transparent hover:bg-zinc-100 hover:text-zinc-900 dark:border-border dark:hover:bg-muted dark:hover:text-foreground hover:border-zinc-300 dark:hover:border-primary/50',
+          'border-2 border-zinc-300 bg-transparent text-zinc-900 hover:bg-zinc-100 hover:border-zinc-400 border-zinc-400 bg-transparent text-white hover:bg-zinc-800 hover:border-zinc-300',
         secondary:
-          'bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80',
-        ghost:
-          'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-muted dark:hover:text-foreground',
-        link: 'text-zinc-900 underline-offset-4 hover:underline dark:text-foreground',
+          'bg-zinc-200 text-zinc-900 hover:bg-zinc-300 shadow-sm bg-zinc-700 text-white hover:bg-zinc-600',
+        ghost: 'text-zinc-900 hover:bg-zinc-100 text-white hover:bg-zinc-800',
+        link: 'text-zinc-900 underline-offset-4 hover:underline text-white',
       },
       size: {
         default: 'h-10 px-4 py-2',
