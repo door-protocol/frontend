@@ -193,3 +193,31 @@ export function useWithdrawFromJuniorVault() {
     error,
   };
 }
+
+/**
+ * Hook to calculate claimable yield for Junior vault
+ * Yield = convertToAssets(shares) - shares
+ */
+export function useJuniorVaultClaimableYield() {
+  const { address } = useAccount();
+  const { balance: shares } = useJuniorVaultBalance();
+
+  const {
+    data: assets,
+    isLoading,
+    error,
+  } = useReadContract({
+    address: ADDRESSES.juniorVault,
+    abi: JuniorVaultABI,
+    functionName: 'convertToAssets',
+    args: shares ? [shares] : undefined,
+  });
+
+  const claimableYield = assets && shares ? assets - shares : BigInt(0);
+
+  return {
+    claimableYield,
+    isLoading,
+    error,
+  };
+}

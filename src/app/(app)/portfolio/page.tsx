@@ -5,8 +5,14 @@ import PositionCard from '@/components/portfolio/PositionCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle, Wallet } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
-import { useSeniorVaultBalance } from '@/hooks/useSeniorVault';
-import { useJuniorVaultBalance } from '@/hooks/useJuniorVault';
+import {
+  useSeniorVaultBalance,
+  useSeniorVaultClaimableYield,
+} from '@/hooks/useSeniorVault';
+import {
+  useJuniorVaultBalance,
+  useJuniorVaultClaimableYield,
+} from '@/hooks/useJuniorVault';
 import { useCurrentEpochId } from '@/hooks/useEpochManager';
 import { useCoreVaultStats } from '@/hooks/useCoreVault';
 import { formatUnits } from 'viem';
@@ -19,6 +25,8 @@ export default function PortfolioPage() {
   // Fetch real contract data
   const { balance: seniorBalance } = useSeniorVaultBalance();
   const { balance: juniorBalance } = useJuniorVaultBalance();
+  const { claimableYield: seniorYield } = useSeniorVaultClaimableYield();
+  const { claimableYield: juniorYield } = useJuniorVaultClaimableYield();
   const { currentEpochId } = useCurrentEpochId();
   const { stats } = useCoreVaultStats();
 
@@ -29,7 +37,10 @@ export default function PortfolioPage() {
   const juniorBalanceNum = juniorBalance
     ? Number(formatUnits(juniorBalance, 6))
     : 0;
-  const totalValue = seniorBalanceNum + juniorBalanceNum;
+  const seniorYieldNum = seniorYield ? Number(formatUnits(seniorYield, 6)) : 0;
+  const juniorYieldNum = juniorYield ? Number(formatUnits(juniorYield, 6)) : 0;
+  const totalValue =
+    seniorBalanceNum + juniorBalanceNum + seniorYieldNum + juniorYieldNum;
 
   const hasSeniorPosition = seniorBalanceNum > 0;
   const hasJuniorPosition = juniorBalanceNum > 0;
@@ -49,12 +60,12 @@ export default function PortfolioPage() {
   const position = {
     senior: {
       balance: seniorBalanceNum.toString(),
-      claimableYield: '0', // Would need to track yields
+      claimableYield: seniorYieldNum.toString(),
       depositEpoch: 1,
     },
     junior: {
       balance: juniorBalanceNum.toString(),
-      claimableYield: '0', // Would need to track yields
+      claimableYield: juniorYieldNum.toString(),
       depositEpoch: 1,
     },
     totalValue: totalValue.toString(),

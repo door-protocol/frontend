@@ -193,3 +193,31 @@ export function useWithdrawFromSeniorVault() {
     error,
   };
 }
+
+/**
+ * Hook to calculate claimable yield for Senior vault
+ * Yield = convertToAssets(shares) - shares
+ */
+export function useSeniorVaultClaimableYield() {
+  const { address } = useAccount();
+  const { balance: shares } = useSeniorVaultBalance();
+
+  const {
+    data: assets,
+    isLoading,
+    error,
+  } = useReadContract({
+    address: ADDRESSES.seniorVault,
+    abi: SeniorVaultABI,
+    functionName: 'convertToAssets',
+    args: shares ? [shares] : undefined,
+  });
+
+  const claimableYield = assets && shares ? assets - shares : BigInt(0);
+
+  return {
+    claimableYield,
+    isLoading,
+    error,
+  };
+}
