@@ -1,4 +1,6 @@
 import { ImageResponse } from 'next/og';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 // Image metadata
 export const alt = 'DOOR Protocol - DeFi Fixed Income';
@@ -10,6 +12,12 @@ export const contentType = 'image/png';
 
 // Image generation
 export default async function OGImage() {
+  // Read the logo file and convert to base64
+  const logoPath = join(process.cwd(), 'public', 'door-logo.webp');
+  const logoBuffer = await readFile(logoPath);
+  const logoBase64 = logoBuffer.toString('base64');
+  const logoDataUrl = `data:image/webp;base64,${logoBase64}`;
+
   return new ImageResponse(
     <div
       style={{
@@ -57,18 +65,7 @@ export default async function OGImage() {
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
           }}
         >
-          <svg
-            width="100"
-            height="100"
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M7 6 L7 26 L16 26 C22.5 26 26 22.5 26 16 C26 9.5 22.5 6 16 6 L7 6 Z M11 10 L16 10 C19.5 10 22 12.5 22 16 C22 19.5 19.5 22 16 22 L11 22 L11 10 Z"
-              fill="#18181b"
-            />
-          </svg>
+          <img src={logoDataUrl} width="100" height="100" alt="DOOR Logo" />
         </div>
 
         {/* Title */}

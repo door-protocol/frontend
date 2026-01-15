@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,19 +29,13 @@ export function Header() {
           href="/"
           className="flex items-center space-x-2 group transition-all duration-500 ease-in-out hover:scale-105 shrink-0"
         >
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-8 h-8 text-foreground"
-          >
-            <path
-              d="M7 6 L7 26 L16 26 C22.5 26 26 22.5 26 16 C26 9.5 22.5 6 16 6 L7 6 Z M11 10 L16 10 C19.5 10 22 12.5 22 16 C22 19.5 19.5 22 16 22 L11 22 L11 10 Z"
-              fill="currentColor"
-            />
-          </svg>
+          <Image
+            src="/door-logo.webp"
+            alt="DOOR Protocol Logo"
+            width={32}
+            height={32}
+            className="w-8 h-8"
+          />
           <span className="hidden md:inline-block font-bold text-lg text-foreground whitespace-nowrap">
             DOOR Protocol
           </span>

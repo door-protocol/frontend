@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const footerLinks = {
   Protocol: [
@@ -25,19 +26,13 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-3 text-center md:text-left md:col-span-3">
             <div className="flex items-center justify-center md:justify-start space-x-2">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-8 h-8 text-foreground"
-              >
-                <path
-                  d="M7 6 L7 26 L16 26 C22.5 26 26 22.5 26 16 C26 9.5 22.5 6 16 6 L7 6 Z M11 10 L16 10 C19.5 10 22 12.5 22 16 C22 19.5 19.5 22 16 22 L11 22 L11 10 Z"
-                  fill="currentColor"
-                />
-              </svg>
+              <Image
+                src="/door-logo.webp"
+                alt="DOOR Protocol Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8"
+              />
               <span className="font-bold text-foreground">DOOR Protocol</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm md:max-w-none">
