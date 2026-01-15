@@ -7,7 +7,6 @@ import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { ThemeToggle } from './ThemeToggle';
 import { CustomConnectButton } from './CustomConnectButton';
 
 const navItems = [
@@ -64,11 +63,8 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Right Side - Theme Toggle & Connect Wallet */}
+        {/* Right Side - Connect Wallet */}
         <div className="flex items-center gap-1.5 shrink-0">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-
           {/* Connect Wallet - Hidden on smallest screens */}
           <div className="hidden sm:block">
             <CustomConnectButton />

@@ -1,14 +1,18 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { formatNumber } from '@/lib/utils';
 import { TrendingUp, Calendar } from 'lucide-react';
+import { useEarlyWithdraw, useRequestWithdraw } from '@/hooks/useEpochManager';
+import { useToast } from '@/hooks/useToast';
 
 interface PositionCardProps {
   tranche: 'senior' | 'junior';
   balance: string;
+  shares?: bigint; // Original shares balance
   claimableYield: string;
   apy: number;
   depositEpoch: number;
@@ -18,6 +22,7 @@ interface PositionCardProps {
 export default function PositionCard({
   tranche,
   balance,
+  shares,
   claimableYield,
   apy,
   depositEpoch,
@@ -25,9 +30,83 @@ export default function PositionCard({
 }: PositionCardProps) {
   const isSenior = tranche === 'senior';
   const totalValue = Number(balance) + Number(claimableYield);
+  const { toast } = useToast();
 
   // Calculate progress (mock: based on epoch difference)
   const epochProgress = ((currentEpoch - depositEpoch) / 12) * 100; // Assuming 12 epochs = 1 period
+
+  // Withdraw hooks
+  const {
+    earlyWithdraw,
+    isPending: isEarlyWithdrawPending,
+    isConfirming: isEarlyWithdrawConfirming,
+    isSuccess: isEarlyWithdrawSuccess,
+    error: earlyWithdrawError,
+    hash: earlyWithdrawHash,
+  } = useEarlyWithdraw();
+
+  const {
+    requestWithdraw,
+    isPending: isRequestPending,
+    isConfirming: isRequestConfirming,
+    isSuccess: isRequestSuccess,
+    error: requestError,
+    hash: requestHash,
+  } = useRequestWithdraw();
+
+  // Handle early withdraw (with penalty)
+  const handleEarlyWithdraw = () => {
+    if (!shares || shares === BigInt(0)) return;
+    earlyWithdraw(isSenior, shares);
+  };
+
+  // Handle request withdraw (for next epoch, no penalty)
+  const handleRequestWithdraw = () => {
+    if (!shares || shares === BigInt(0)) return;
+    requestWithdraw(isSenior, shares);
+  };
+
+  // Handle Early Withdraw Success/Error
+  useEffect(() => {
+    if (isEarlyWithdrawSuccess) {
+      const explorerUrl = earlyWithdrawHash
+        ? `https://sepolia.mantlescan.xyz/tx/${earlyWithdrawHash}`
+        : null;
+      toast.success(
+        `Early Withdrawal Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+      );
+      console.log('✅ Early withdraw successful!', explorerUrl);
+    }
+  }, [isEarlyWithdrawSuccess, earlyWithdrawHash, toast]);
+
+  useEffect(() => {
+    if (earlyWithdrawError) {
+      const errorMessage = earlyWithdrawError?.message || 'Unknown error';
+      toast.error(`Early Withdraw Failed: ${errorMessage}`);
+      console.error('❌ Early withdraw error:', earlyWithdrawError);
+    }
+  }, [earlyWithdrawError, toast]);
+
+  // Handle Request Withdraw Success/Error
+  useEffect(() => {
+    if (isRequestSuccess) {
+      const explorerUrl = requestHash
+        ? `https://sepolia.mantlescan.xyz/tx/${requestHash}`
+        : null;
+      toast.success(
+        `Withdrawal Request Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+      );
+      console.log('✅ Request withdraw successful!', explorerUrl);
+    }
+  }, [isRequestSuccess, requestHash, toast]);
+
+  useEffect(() => {
+    if (requestError) {
+      const errorMessage = requestError?.message || 'Unknown error';
+      toast.error(`Request Withdraw Failed: ${errorMessage}`);
+      console.error('❌ Request withdraw error:', requestError);
+    }
+  }, [requestError, toast]);
 
   return (
     <Card
@@ -124,11 +203,35 @@ export default function PositionCard({
 
         {/* Actions */}
         <div className="grid grid-cols-2 gap-2 pt-2">
-          <Button variant="outline" size="sm">
-            Early Withdraw
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleEarlyWithdraw}
+            disabled={
+              !shares ||
+              shares === BigInt(0) ||
+              isEarlyWithdrawPending ||
+              isEarlyWithdrawConfirming
+            }
+          >
+            {isEarlyWithdrawPending || isEarlyWithdrawConfirming
+              ? 'Processing...'
+              : 'Early Withdraw'}
           </Button>
-          <Button variant="default" size="sm">
-            Claim Yield
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleRequestWithdraw}
+            disabled={
+              !shares ||
+              shares === BigInt(0) ||
+              isRequestPending ||
+              isRequestConfirming
+            }
+          >
+            {isRequestPending || isRequestConfirming
+              ? 'Processing...'
+              : 'Request Withdraw'}
           </Button>
         </div>
       </CardContent>

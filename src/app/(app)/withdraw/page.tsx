@@ -20,6 +20,8 @@ import {
   useCurrentEpochState,
   useUserWithdrawRequests,
 } from '@/hooks/useEpochManager';
+import { useToast } from '@/hooks/useToast';
+import { ToastContainer } from '@/components/ui/toast-container';
 
 type TrancheType = 'senior' | 'junior';
 
@@ -28,6 +30,7 @@ export default function WithdrawPage() {
   const [selectedTranche, setSelectedTranche] = useState<TrancheType>('senior');
   const [amount, setAmount] = useState('');
   const [shares, setShares] = useState<bigint>(BigInt(0));
+  const { toast } = useToast();
 
   // Fetch balances
   const { balance: seniorBalance } = useSeniorVaultBalance();
@@ -42,17 +45,49 @@ export default function WithdrawPage() {
   const {
     requestWithdraw,
     isPending: isRequestPending,
+    isConfirming: isRequestConfirming,
     isSuccess: isRequestSuccess,
+    error: requestError,
+    hash: requestHash,
   } = useRequestWithdraw();
   const {
     earlyWithdraw,
     isPending: isEarlyPending,
+    isConfirming: isEarlyConfirming,
     isSuccess: isEarlySuccess,
+    error: earlyError,
+    hash: earlyHash,
   } = useEarlyWithdraw();
 
   // Calculate penalty
   const { penalty } = useCalculatePenalty(selectedTranche === 'senior', shares);
   const { penaltyRate } = useEarlyWithdrawPenaltyRate();
+
+  // Logging
+  console.log('=== Withdraw Page Data ===');
+  console.log('Address:', address);
+  console.log('Senior Balance:', seniorBalance);
+  console.log('Junior Balance:', juniorBalance);
+  console.log('Time Remaining:', timeRemaining);
+  console.log('Epoch State:', epochState, '(0=OPEN, 1=LOCKED, 2=SETTLED)');
+  console.log('Requests:', requests);
+  console.log('Penalty Rate:', penaltyRate);
+  console.log('Selected Tranche:', selectedTranche);
+  console.log('Shares:', shares);
+  console.log('Penalty:', penalty);
+  console.log('Transaction States:', {
+    request: {
+      isPending: isRequestPending,
+      isConfirming: isRequestConfirming,
+      isSuccess: isRequestSuccess,
+    },
+    early: {
+      isPending: isEarlyPending,
+      isConfirming: isEarlyConfirming,
+      isSuccess: isEarlySuccess,
+    },
+  });
+  console.log('===========================');
 
   const balance = selectedTranche === 'senior' ? seniorBalance : juniorBalance;
 
@@ -64,6 +99,50 @@ export default function WithdrawPage() {
       setShares(BigInt(0));
     }
   }, [amount]);
+
+  // Handle Request Withdraw Success/Error
+  useEffect(() => {
+    if (isRequestSuccess) {
+      const explorerUrl = requestHash
+        ? `https://sepolia.mantlescan.xyz/tx/${requestHash}`
+        : null;
+      toast.success(
+        `Withdrawal Request Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+      );
+      console.log('✅ Request withdraw successful!', explorerUrl);
+      setAmount('');
+    }
+  }, [isRequestSuccess, requestHash, toast]);
+
+  useEffect(() => {
+    if (requestError) {
+      const errorMessage = requestError?.message || 'Unknown error';
+      toast.error(`Request Withdraw Failed: ${errorMessage}`);
+      console.error('❌ Request withdraw error:', requestError);
+    }
+  }, [requestError, toast]);
+
+  // Handle Early Withdraw Success/Error
+  useEffect(() => {
+    if (isEarlySuccess) {
+      const explorerUrl = earlyHash
+        ? `https://sepolia.mantlescan.xyz/tx/${earlyHash}`
+        : null;
+      toast.success(
+        `Early Withdrawal Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+      );
+      console.log('✅ Early withdraw successful!', explorerUrl);
+      setAmount('');
+    }
+  }, [isEarlySuccess, earlyHash, toast]);
+
+  useEffect(() => {
+    if (earlyError) {
+      const errorMessage = earlyError?.message || 'Unknown error';
+      toast.error(`Early Withdraw Failed: ${errorMessage}`);
+      console.error('❌ Early withdraw error:', earlyError);
+    }
+  }, [earlyError, toast]);
 
   const handleRequestWithdraw = () => {
     if (!shares || shares === BigInt(0)) return;
@@ -93,365 +172,377 @@ export default function WithdrawPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
-      <div className="text-center">
-        <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-3">
-          Withdraw Funds
-        </h1>
-        <p className="text-lg text-muted-foreground">
-          Choose your withdrawal method: queue for next epoch or withdraw
-          immediately
-        </p>
-      </div>
+    <>
+      <ToastContainer />
+      <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-3">
+            Withdraw Funds
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Choose your withdrawal method: queue for next epoch or withdraw
+            immediately
+          </p>
+        </div>
 
-      {/* Warning - Connect Wallet */}
-      {!isConnected && (
-        <Card className="border-2 border-orange-200 dark:border-orange-900 bg-linear-to-br from-orange-50/50 dark:from-orange-950/20 to-orange-100/50 dark:to-orange-950/30 shadow-lg">
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-950/30">
-              <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-            </div>
-            <div>
-              <p className="font-semibold text-orange-900 dark:text-orange-300 mb-1">
-                Wallet Not Connected
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Please connect your wallet to withdraw funds
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Epoch Info */}
-      {timeRemaining !== undefined && (
-        <Card className="border-2 border-blue-200 dark:border-blue-900 bg-linear-to-br from-blue-50/50 dark:from-blue-950/20 to-transparent">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                <div>
-                  <p className="font-semibold text-foreground">
-                    Next Epoch in: {formatTime(timeRemaining)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Queued withdrawals will be processed at epoch end
-                  </p>
-                </div>
+        {/* Warning - Connect Wallet */}
+        {!isConnected && (
+          <Card className="border-2 border-orange-200 dark:border-orange-900 bg-linear-to-br from-orange-50/50 dark:from-orange-950/20 to-orange-100/50 dark:to-orange-950/30 shadow-lg">
+            <CardContent className="p-6 flex items-center gap-4">
+              <div className="p-3 rounded-full bg-orange-100 dark:bg-orange-950/30">
+                <AlertCircle className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">Epoch State</p>
-                <p className="font-semibold text-foreground">
-                  {epochState === 0
-                    ? 'Open'
-                    : epochState === 1
-                      ? 'Locked'
-                      : 'Settled'}
+              <div>
+                <p className="font-semibold text-orange-900 dark:text-orange-300 mb-1">
+                  Wallet Not Connected
                 </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Tranche Selector */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Select Tranche</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => setSelectedTranche('senior')}
-              className={`p-6 rounded-lg border-2 transition-all ${
-                selectedTranche === 'senior'
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30'
-                  : 'border-border hover:border-blue-300'
-              }`}
-            >
-              <div className="text-center">
-                <div className="text-3xl mb-2">🛡️</div>
-                <h3 className="font-bold text-lg mb-1">Senior (DOOR-FIX)</h3>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Fixed yield, lower risk
-                </p>
-                <p className="text-sm font-medium">
-                  Balance: {seniorBalance ? formatUnits(seniorBalance, 6) : '0'}{' '}
-                  USDC
-                </p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setSelectedTranche('junior')}
-              className={`p-6 rounded-lg border-2 transition-all ${
-                selectedTranche === 'junior'
-                  ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/30'
-                  : 'border-border hover:border-orange-300'
-              }`}
-            >
-              <div className="text-center">
-                <div className="text-3xl mb-2">⚔️</div>
-                <h3 className="font-bold text-lg mb-1">Junior (DOOR-BOOST)</h3>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Variable yield, higher risk
-                </p>
-                <p className="text-sm font-medium">
-                  Balance: {juniorBalance ? formatUnits(juniorBalance, 6) : '0'}{' '}
-                  USDC
-                </p>
-              </div>
-            </button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Withdrawal Methods */}
-      <Tabs defaultValue="queue" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="queue" className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            Queue for Next Epoch
-          </TabsTrigger>
-          <TabsTrigger value="immediate" className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            Immediate Withdrawal
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Queue Withdrawal */}
-        <TabsContent value="queue" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Queue for Next Epoch (No Penalty)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="queue-amount">Amount (USDC)</Label>
-                  <button
-                    onClick={handleMaxClick}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    Max
-                  </button>
-                </div>
-                <Input
-                  id="queue-amount"
-                  type="number"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="text-lg"
-                />
                 <p className="text-sm text-muted-foreground">
-                  Available: {balance ? formatUnits(balance, 6) : '0'} USDC
+                  Please connect your wallet to withdraw funds
                 </p>
               </div>
-
-              {amount && Number(amount) > 0 && (
-                <Card className="border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/20">
-                  <CardContent className="p-4 space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Withdrawal Amount
-                      </span>
-                      <span className="font-medium">{amount} USDC</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Penalty</span>
-                      <span className="font-medium text-green-600 dark:text-green-400">
-                        None
-                      </span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-border">
-                      <span className="font-medium">You will receive</span>
-                      <span className="font-bold">{amount} USDC</span>
-                    </div>
-                    <div className="flex items-start gap-2 mt-3 p-3 rounded-lg bg-background">
-                      <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
-                      <p className="text-xs text-muted-foreground">
-                        Your withdrawal will be processed at the end of the
-                        current epoch (
-                        {timeRemaining ? formatTime(timeRemaining) : '...'})
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              <Button
-                onClick={handleRequestWithdraw}
-                disabled={
-                  !isConnected ||
-                  !amount ||
-                  Number(amount) <= 0 ||
-                  isRequestPending
-                }
-                className="w-full"
-                size="lg"
-              >
-                {isRequestPending
-                  ? 'Requesting...'
-                  : isRequestSuccess
-                    ? 'Request Submitted!'
-                    : 'Request Withdrawal'}
-              </Button>
             </CardContent>
           </Card>
-        </TabsContent>
+        )}
 
-        {/* Immediate Withdrawal */}
-        <TabsContent value="immediate" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Immediate Withdrawal (With Penalty)
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="immediate-amount">Amount (USDC)</Label>
-                  <button
-                    onClick={handleMaxClick}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    Max
-                  </button>
-                </div>
-                <Input
-                  id="immediate-amount"
-                  type="number"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="text-lg"
-                />
-                <p className="text-sm text-muted-foreground">
-                  Available: {balance ? formatUnits(balance, 6) : '0'} USDC
-                </p>
-              </div>
-
-              {/* Penalty Warning */}
-              <Card className="border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950/20">
-                <CardContent className="p-4 flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-orange-900 dark:text-orange-300">
-                      Early Withdrawal Penalty
+        {/* Epoch Info */}
+        {timeRemaining !== undefined && (
+          <Card className="border-2 border-blue-200 dark:border-blue-900 bg-linear-to-br from-blue-50/50 dark:from-blue-950/20 to-transparent">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div>
+                    <p className="font-semibold text-foreground">
+                      Next Epoch in: {formatTime(timeRemaining)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Early withdrawals incur a{' '}
-                      {penaltyRate
-                        ? (Number(penaltyRate) / 100).toFixed(1)
-                        : '1'}
-                      % penalty. This penalty is distributed to remaining users.
+                      Queued withdrawals will be processed at epoch end
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Epoch State</p>
+                  <p className="font-semibold text-foreground">
+                    {epochState === 0
+                      ? 'Open'
+                      : epochState === 1
+                        ? 'Locked'
+                        : 'Settled'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-              {amount && Number(amount) > 0 && penalty !== undefined && (
-                <Card className="border-border bg-background">
-                  <CardContent className="p-4 space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Withdrawal Amount
-                      </span>
-                      <span className="font-medium">{amount} USDC</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Penalty (
+        {/* Tranche Selector */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Select Tranche</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => setSelectedTranche('senior')}
+                className={`p-6 rounded-lg border-2 transition-all ${
+                  selectedTranche === 'senior'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30'
+                    : 'border-border hover:border-blue-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-2">🛡️</div>
+                  <h3 className="font-bold text-lg mb-1">Senior (DOOR-FIX)</h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Fixed yield, lower risk
+                  </p>
+                  <p className="text-sm font-medium">
+                    Balance:{' '}
+                    {seniorBalance ? formatUnits(seniorBalance, 6) : '0'} USDC
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setSelectedTranche('junior')}
+                className={`p-6 rounded-lg border-2 transition-all ${
+                  selectedTranche === 'junior'
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/30'
+                    : 'border-border hover:border-orange-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-2">⚔️</div>
+                  <h3 className="font-bold text-lg mb-1">
+                    Junior (DOOR-BOOST)
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Variable yield, higher risk
+                  </p>
+                  <p className="text-sm font-medium">
+                    Balance:{' '}
+                    {juniorBalance ? formatUnits(juniorBalance, 6) : '0'} USDC
+                  </p>
+                </div>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Withdrawal Methods */}
+        <Tabs defaultValue="queue" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="queue" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Queue for Next Epoch
+            </TabsTrigger>
+            <TabsTrigger value="immediate" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Immediate Withdrawal
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Queue Withdrawal */}
+          <TabsContent value="queue" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  Queue for Next Epoch (No Penalty)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="queue-amount">Amount (USDC)</Label>
+                    <button
+                      onClick={handleMaxClick}
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      Max
+                    </button>
+                  </div>
+                  <Input
+                    id="queue-amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="text-lg"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Available: {balance ? formatUnits(balance, 6) : '0'} USDC
+                  </p>
+                </div>
+
+                {amount && Number(amount) > 0 && (
+                  <Card className="border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/20">
+                    <CardContent className="p-4 space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Withdrawal Amount
+                        </span>
+                        <span className="font-medium">{amount} USDC</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Penalty</span>
+                        <span className="font-medium text-green-600 dark:text-green-400">
+                          None
+                        </span>
+                      </div>
+                      <div className="flex justify-between pt-2 border-t border-border">
+                        <span className="font-medium">You will receive</span>
+                        <span className="font-bold">{amount} USDC</span>
+                      </div>
+                      <div className="flex items-start gap-2 mt-3 p-3 rounded-lg bg-background">
+                        <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                        <p className="text-xs text-muted-foreground">
+                          Your withdrawal will be processed at the end of the
+                          current epoch (
+                          {timeRemaining ? formatTime(timeRemaining) : '...'})
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Button
+                  onClick={handleRequestWithdraw}
+                  disabled={
+                    !isConnected ||
+                    !amount ||
+                    Number(amount) <= 0 ||
+                    isRequestPending ||
+                    isRequestConfirming
+                  }
+                  className="w-full"
+                  size="lg"
+                >
+                  {isRequestPending
+                    ? 'Requesting...'
+                    : isRequestConfirming
+                      ? 'Confirming...'
+                      : isRequestSuccess
+                        ? 'Request Submitted!'
+                        : 'Request Withdrawal'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Immediate Withdrawal */}
+          <TabsContent value="immediate" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Immediate Withdrawal (With Penalty)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="immediate-amount">Amount (USDC)</Label>
+                    <button
+                      onClick={handleMaxClick}
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      Max
+                    </button>
+                  </div>
+                  <Input
+                    id="immediate-amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="text-lg"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Available: {balance ? formatUnits(balance, 6) : '0'} USDC
+                  </p>
+                </div>
+
+                {/* Penalty Warning */}
+                <Card className="border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950/20">
+                  <CardContent className="p-4 flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <p className="font-semibold text-orange-900 dark:text-orange-300">
+                        Early Withdrawal Penalty
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Early withdrawals incur a{' '}
                         {penaltyRate
                           ? (Number(penaltyRate) / 100).toFixed(1)
                           : '1'}
-                        %)
-                      </span>
-                      <span className="font-medium text-orange-600 dark:text-orange-400">
-                        -{formatUnits(penalty, 6)} USDC
-                      </span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-border">
-                      <span className="font-medium">You will receive</span>
-                      <span className="font-bold">
-                        {(
-                          Number(amount) - Number(formatUnits(penalty, 6))
-                        ).toFixed(2)}{' '}
-                        USDC
-                      </span>
+                        % penalty. This penalty is distributed to remaining
+                        users.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
-              )}
 
-              <Button
-                onClick={handleEarlyWithdraw}
-                disabled={
-                  !isConnected ||
-                  !amount ||
-                  Number(amount) <= 0 ||
-                  isEarlyPending
-                }
-                className="w-full bg-orange-600 hover:bg-orange-700"
-                size="lg"
-              >
-                {isEarlyPending
-                  ? 'Withdrawing...'
-                  : isEarlySuccess
-                    ? 'Withdrawal Complete!'
-                    : 'Withdraw Immediately'}
-              </Button>
+                {amount && Number(amount) > 0 && penalty !== undefined && (
+                  <Card className="border-border bg-background">
+                    <CardContent className="p-4 space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Withdrawal Amount
+                        </span>
+                        <span className="font-medium">{amount} USDC</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">
+                          Penalty (
+                          {penaltyRate
+                            ? (Number(penaltyRate) / 100).toFixed(1)
+                            : '1'}
+                          %)
+                        </span>
+                        <span className="font-medium text-orange-600 dark:text-orange-400">
+                          -{formatUnits(penalty, 6)} USDC
+                        </span>
+                      </div>
+                      <div className="flex justify-between pt-2 border-t border-border">
+                        <span className="font-medium">You will receive</span>
+                        <span className="font-bold">
+                          {(
+                            Number(amount) - Number(formatUnits(penalty, 6))
+                          ).toFixed(2)}{' '}
+                          USDC
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <Button
+                  onClick={handleEarlyWithdraw}
+                  disabled={
+                    !isConnected ||
+                    !amount ||
+                    Number(amount) <= 0 ||
+                    isEarlyPending ||
+                    isEarlyConfirming
+                  }
+                  className="w-full bg-orange-600 hover:bg-orange-700"
+                  size="lg"
+                >
+                  {isEarlyPending
+                    ? 'Withdrawing...'
+                    : isEarlyConfirming
+                      ? 'Confirming...'
+                      : isEarlySuccess
+                        ? 'Withdrawal Complete!'
+                        : 'Withdraw Immediately'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Pending Withdrawal Requests */}
+        {requests && requests.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Withdrawal Requests</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {requests
+                  .filter((req) => !req.processed)
+                  .map((req, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 rounded-lg border border-border bg-background"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl">
+                          {req.isSenior ? '🛡️' : '⚔️'}
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {req.isSenior ? 'Senior' : 'Junior'} Tranche
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Epoch #{Number(req.epochId)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-lg">
+                          {formatUnits(req.shares, 6)} USDC
+                        </p>
+                        <p className="text-sm text-muted-foreground">Pending</p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Pending Withdrawal Requests */}
-      {requests && requests.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Pending Withdrawal Requests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {requests
-                .filter((req) => !req.processed)
-                .map((req, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border bg-background"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">
-                        {req.isSenior ? '🛡️' : '⚔️'}
-                      </div>
-                      <div>
-                        <p className="font-medium">
-                          {req.isSenior ? 'Senior' : 'Junior'} Tranche
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Epoch #{Number(req.epochId)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">
-                        {formatUnits(req.shares, 6)} USDC
-                      </p>
-                      <p className="text-sm text-muted-foreground">Pending</p>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
