@@ -11,6 +11,7 @@ import {
   useEpoch,
   useCurrentEpochState,
 } from '@/hooks/useEpochManager';
+import { useLatestRates } from '@/hooks/useBackendAPI';
 import { formatUnits } from 'viem';
 import {
   estimateJuniorAPY,
@@ -18,11 +19,6 @@ import {
   formatAPY,
 } from '@/lib/utils/apyCalculations';
 import { ESTIMATED_VAULT_YIELD_BPS } from '@/lib/config';
-import {
-  useDOR,
-  useAllRateSources,
-  useSeniorTargetAPY,
-} from '@/hooks/useRateOracle';
 
 export default function DashboardPage() {
   // Fetch real contract data
@@ -30,9 +26,6 @@ export default function DashboardPage() {
   const { currentEpochId } = useCurrentEpochId();
   const { state: epochState } = useCurrentEpochState();
   const { epoch: currentEpoch } = useEpoch(currentEpochId);
-  const { dor: dorRate } = useDOR();
-  const { rateSources } = useAllRateSources();
-  const { seniorTargetAPY } = useSeniorTargetAPY();
 
   // Calculate stats from contract data
   const stats = vaultStats
@@ -65,19 +58,30 @@ export default function DashboardPage() {
         juniorRatio: 0,
       };
 
-  // Process DOR data from contract
-  const dor = {
-    currentRate: dorRate ? Number(dorRate) / 100 : 4.62,
-    sources: rateSources
-      ? rateSources
-          .filter((source) => source.isActive)
-          .map((source) => ({
-            name: source.name,
-            rate: Number(source.rate) / 100,
-            weight: Number(source.weight) / 100,
-          }))
-      : [],
-  };
+  // Fetch DOR data from backend API
+  const { data: ratesData, isLoading: ratesLoading } = useLatestRates();
+
+  const dor = ratesData
+    ? {
+        currentRate: ratesData.dor,
+        seniorTarget: ratesData.seniorTarget,
+        sources: ratesData.sources.map((s) => ({
+          name: s.name,
+          rate: s.rate,
+          isLive: s.isLive,
+        })),
+        liveCount: ratesData.liveCount,
+        fallbackCount: ratesData.fallbackCount,
+        source: ratesData.source,
+      }
+    : {
+        currentRate: 0,
+        seniorTarget: 0,
+        sources: [],
+        liveCount: 0,
+        fallbackCount: 0,
+        source: 'loading' as const,
+      };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
@@ -148,10 +152,7 @@ export default function DashboardPage() {
             <p className="text-sm text-muted-foreground">
               Target:{' '}
               <span className="font-medium text-foreground">
-                {seniorTargetAPY
-                  ? (Number(seniorTargetAPY) / 100).toFixed(1)
-                  : stats.seniorAPY}
-                %
+                {dor.seniorTarget ? dor.seniorTarget : stats.seniorAPY}%
               </span>
             </p>
           </CardContent>
@@ -270,24 +271,45 @@ export default function DashboardPage() {
       {/* DOR Rate */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-foreground">DOR Benchmark Rate</CardTitle>
+          <CardTitle className="text-foreground flex items-center justify-between">
+            <span>DOR Benchmark Rate</span>
+            {dor.source && (
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                dor.source === 'database' 
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+              }`}>
+                {dor.source === 'database' ? '🔴 Live' : '📊 Mock Data'}
+              </span>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Current DOR</span>
               <span className="text-2xl font-bold text-foreground">
-                {dor.currentRate}%
+                {ratesLoading ? '...' : `${dor.currentRate}%`}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Senior Target (DOR + 1%)</span>
+              <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                {ratesLoading ? '...' : `${dor.seniorTarget}%`}
               </span>
             </div>
             <div className="border-t border-border pt-3 space-y-2 text-sm">
+              <div className="text-xs text-muted-foreground mb-2">
+                Rate Sources ({dor.liveCount} live, {dor.fallbackCount} fallback)
+              </div>
               {dor.sources.map((source) => (
                 <div
                   key={source.name}
                   className="flex items-center justify-between text-muted-foreground"
                 >
-                  <span>
-                    • {source.name} ({source.weight}%)
+                  <span className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${source.isLive ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                    {source.name}
                   </span>
                   <span>{source.rate}%</span>
                 </div>
