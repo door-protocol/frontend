@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { generateMockRateHistory } from '@/mock/vaultData';
 import {
   LineChart,
   Line,
@@ -13,29 +12,45 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { formatNumber } from '@/lib/utils';
-import { useCoreVaultStats } from '@/hooks/useCoreVault';
+import { useCoreVaultStats, useProtocolFeeRate } from '@/hooks/useCoreVault';
+import { useHistoricalRates } from '@/hooks/useHistoricalData';
 import { formatUnits } from 'viem';
 import {
   estimateJuniorAPY,
   calculateVaultAPY,
 } from '@/lib/utils/apyCalculations';
+import {
+  DEFAULT_SENIOR_APY,
+  DEFAULT_PROTOCOL_FEE_BPS,
+  ESTIMATED_VAULT_YIELD_BPS,
+} from '@/lib/config';
 
 export default function AnalyticsPage() {
   // Fetch real contract data
   const { stats } = useCoreVaultStats();
+  const { protocolFeeRate } = useProtocolFeeRate();
 
-  // For now, use mock historical data
-  // In production, would fetch historical data from subgraph or events
-  const rateHistory = generateMockRateHistory(30);
+  // Fetch historical data from contract events
+  const { history: rateHistory, isLoading: historyLoading } =
+    useHistoricalRates(30);
 
   // Calculate current metrics from contract
-  const seniorAPY = stats ? Number(stats.currentSeniorRate) / 100 : 5.52;
+  const seniorAPY = stats
+    ? Number(stats.currentSeniorRate) / 100
+    : DEFAULT_SENIOR_APY;
+
+  // Use contract protocol fee rate, fallback to default
+  const protocolFeeRateBps = protocolFeeRate
+    ? Number(protocolFeeRate)
+    : DEFAULT_PROTOCOL_FEE_BPS;
+
   const juniorAPYEstimate = stats
     ? estimateJuniorAPY(
         stats.seniorPrincipal,
         stats.juniorPrincipal,
         stats.currentSeniorRate,
-        800,
+        ESTIMATED_VAULT_YIELD_BPS,
+        protocolFeeRateBps,
       )
     : null;
   const juniorAPY = juniorAPYEstimate !== null ? juniorAPYEstimate / 100 : 0;
@@ -68,50 +83,67 @@ export default function AnalyticsPage() {
           <CardTitle>APY Historical Trend (30 Days)</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={rateHistory}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis
-                dataKey="date"
-                tick={{ fontSize: 12 }}
-                className="text-muted-foreground"
-              />
-              <YAxis
-                tick={{ fontSize: 12 }}
-                className="text-muted-foreground"
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e4e4e7',
-                  borderRadius: '8px',
-                }}
-                labelStyle={{ color: '#52525b' }}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="seniorAPY"
-                stroke="#2563eb"
-                strokeWidth={2}
-                name="Senior APY"
-              />
-              <Line
-                type="monotone"
-                dataKey="juniorAPY"
-                stroke="#ea580c"
-                strokeWidth={2}
-                name="Junior APY"
-              />
-              <Line
-                type="monotone"
-                dataKey="vaultAPY"
-                stroke="#84cc16"
-                strokeWidth={2}
-                name="Vault APY"
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {historyLoading ? (
+            <div className="flex items-center justify-center h-[300px]">
+              <p className="text-muted-foreground">
+                Loading historical data...
+              </p>
+            </div>
+          ) : rateHistory.length === 0 ? (
+            <div className="flex items-center justify-center h-[300px]">
+              <p className="text-muted-foreground">
+                No historical data available yet
+              </p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={rateHistory}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  className="stroke-border"
+                />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12 }}
+                  className="text-muted-foreground"
+                />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  className="text-muted-foreground"
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e4e4e7',
+                    borderRadius: '8px',
+                  }}
+                  labelStyle={{ color: '#52525b' }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="seniorAPY"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                  name="Senior APY"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="juniorAPY"
+                  stroke="#ea580c"
+                  strokeWidth={2}
+                  name="Junior APY"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="vaultAPY"
+                  stroke="#84cc16"
+                  strokeWidth={2}
+                  name="Vault APY"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </CardContent>
       </Card>
 
@@ -170,7 +202,9 @@ export default function AnalyticsPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Protocol Fee</span>
-              <span className="font-medium">1.0%</span>
+              <span className="font-medium">
+                {(protocolFeeRateBps / 100).toFixed(1)}%
+              </span>
             </div>
           </CardContent>
         </Card>

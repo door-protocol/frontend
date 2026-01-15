@@ -17,6 +17,12 @@ import {
   calculateVaultAPY,
   formatAPY,
 } from '@/lib/utils/apyCalculations';
+import { ESTIMATED_VAULT_YIELD_BPS } from '@/lib/config';
+import {
+  useDOR,
+  useAllRateSources,
+  useSeniorTargetAPY,
+} from '@/hooks/useRateOracle';
 
 export default function DashboardPage() {
   // Fetch real contract data
@@ -24,6 +30,9 @@ export default function DashboardPage() {
   const { currentEpochId } = useCurrentEpochId();
   const { state: epochState } = useCurrentEpochState();
   const { epoch: currentEpoch } = useEpoch(currentEpochId);
+  const { dor: dorRate } = useDOR();
+  const { rateSources } = useAllRateSources();
+  const { seniorTargetAPY } = useSeniorTargetAPY();
 
   // Calculate stats from contract data
   const stats = vaultStats
@@ -33,7 +42,7 @@ export default function DashboardPage() {
           vaultStats.seniorPrincipal,
           vaultStats.juniorPrincipal,
           vaultStats.currentSeniorRate,
-          800, // Estimated 8% vault yield
+          ESTIMATED_VAULT_YIELD_BPS,
         );
         const juniorAPY =
           estimatedJuniorAPY !== null ? estimatedJuniorAPY / 100 : 0;
@@ -56,14 +65,18 @@ export default function DashboardPage() {
         juniorRatio: 0,
       };
 
-  // Mock DOR data (would need oracle contract integration)
+  // Process DOR data from contract
   const dor = {
-    currentRate: 5.2,
-    sources: [
-      { name: 'mETH Staking', rate: 6.5, weight: 40 },
-      { name: 'Lending Protocol', rate: 4.8, weight: 35 },
-      { name: 'DEX LP', rate: 3.5, weight: 25 },
-    ],
+    currentRate: dorRate ? Number(dorRate) / 100 : 4.62,
+    sources: rateSources
+      ? rateSources
+          .filter((source) => source.isActive)
+          .map((source) => ({
+            name: source.name,
+            rate: Number(source.rate) / 100,
+            weight: Number(source.weight) / 100,
+          }))
+      : [],
   };
 
   return (
@@ -112,12 +125,9 @@ export default function DashboardPage() {
             <p className="text-4xl font-bold text-foreground mb-2">
               ${formatCompactNumber(Number(stats.tvl))}
             </p>
-            <div className="flex items-center gap-1 text-sm">
-              <span className="text-green-600 dark:text-green-400 font-medium">
-                ↗ +5.2%
-              </span>
-              <span className="text-muted-foreground">this week</span>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Total protocol assets
+            </p>
           </CardContent>
         </Card>
 
@@ -138,7 +148,10 @@ export default function DashboardPage() {
             <p className="text-sm text-muted-foreground">
               Target:{' '}
               <span className="font-medium text-foreground">
-                {stats.seniorAPY}%
+                {seniorTargetAPY
+                  ? (Number(seniorTargetAPY) / 100).toFixed(1)
+                  : stats.seniorAPY}
+                %
               </span>
             </p>
           </CardContent>
@@ -158,9 +171,7 @@ export default function DashboardPage() {
             <p className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">
               {stats.juniorAPY}%
             </p>
-            <p className="text-sm text-muted-foreground">
-              Range: <span className="font-medium text-foreground">15-30%</span>
-            </p>
+            <p className="text-sm text-muted-foreground">Variable yield</p>
           </CardContent>
         </Card>
       </div>

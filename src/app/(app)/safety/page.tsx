@@ -13,14 +13,20 @@ import {
 } from '@/hooks/useSafetyModule';
 import { useCoreVaultStats } from '@/hooks/useCoreVault';
 import { formatUnits } from 'viem';
+import { DEFAULT_MIN_JUNIOR_RATIO, DEFAULT_TARGET_APY } from '@/lib/config';
 
 export default function SafetyPage() {
-  const { level } = useCurrentSafetyLevel();
+  const { level, isLoading: levelLoading } = useCurrentSafetyLevel();
   const { config } = useCurrentSafetyConfig();
   const { healthStatus } = useHealthStatus();
   const { stats } = useCoreVaultStats();
-  const { isPaused: seniorPaused } = useSeniorDepositsPaused();
-  const { isPaused: juniorPaused } = useJuniorDepositsPaused();
+  const { isPaused: seniorPausedValue } = useSeniorDepositsPaused();
+  const { isPaused: juniorPausedValue } = useJuniorDepositsPaused();
+
+  // Use fallback values when data is not available
+  const currentLevel = level ?? SafetyLevel.HEALTHY;
+  const seniorPausedValueValue = seniorPausedValue ?? false;
+  const juniorPausedValueValue = juniorPausedValue ?? false;
 
   const getLevelColor = (levelValue: SafetyLevel) => {
     switch (levelValue) {
@@ -73,11 +79,17 @@ export default function SafetyPage() {
 
   const currentRatio = healthStatus
     ? Number(healthStatus.currentRatio) / 100
-    : 0;
-  const minRatio = config ? Number(config.minJuniorRatio) / 100 : 0;
-  const targetAPY = config ? Number(config.seniorTargetAPY) / 100 : 0;
+    : stats
+      ? Number(stats.juniorRatio) / 100
+      : 0;
+  const minRatio = config
+    ? Number(config.minJuniorRatio) / 100
+    : DEFAULT_MIN_JUNIOR_RATIO;
+  const targetAPY = config
+    ? Number(config.seniorTargetAPY) / 100
+    : DEFAULT_TARGET_APY;
 
-  const color = level !== undefined ? getLevelColor(level) : 'gray';
+  const color = getLevelColor(currentLevel);
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
@@ -100,7 +112,7 @@ export default function SafetyPage() {
               <div
                 className={`p-4 rounded-full bg-${color}-100 dark:bg-${color}-950/30 text-${color}-600 dark:text-${color}-400`}
               >
-                {level !== undefined && getLevelIcon(level)}
+                {getLevelIcon(currentLevel)}
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">
@@ -109,12 +121,10 @@ export default function SafetyPage() {
                 <h2
                   className={`text-4xl font-bold text-${color}-600 dark:text-${color}-400 mb-2`}
                 >
-                  {level !== undefined
-                    ? getSafetyLevelName(level)
-                    : 'Loading...'}
+                  {getSafetyLevelName(currentLevel)}
                 </h2>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  {level !== undefined && getLevelDescription(level)}
+                  {getLevelDescription(currentLevel)}
                 </p>
               </div>
             </div>
@@ -142,12 +152,12 @@ export default function SafetyPage() {
           <CardContent>
             <p
               className={`text-3xl font-bold ${
-                healthStatus?.isHealthy
+                (healthStatus?.isHealthy ?? true)
                   ? 'text-green-600 dark:text-green-400'
                   : 'text-orange-600 dark:text-orange-400'
               }`}
             >
-              {healthStatus?.isHealthy ? 'Healthy' : 'Unhealthy'}
+              {(healthStatus?.isHealthy ?? true) ? 'Healthy' : 'Unhealthy'}
             </p>
           </CardContent>
         </Card>
@@ -161,12 +171,12 @@ export default function SafetyPage() {
           <CardContent>
             <p
               className={`text-3xl font-bold ${
-                healthStatus?.isCritical
+                (healthStatus?.isCritical ?? false)
                   ? 'text-red-600 dark:text-red-400'
                   : 'text-green-600 dark:text-green-400'
               }`}
             >
-              {healthStatus?.isCritical ? 'Critical' : 'Normal'}
+              {(healthStatus?.isCritical ?? false) ? 'Critical' : 'Normal'}
             </p>
           </CardContent>
         </Card>
@@ -194,7 +204,7 @@ export default function SafetyPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
               className={`p-6 rounded-lg border-2 ${
-                seniorPaused
+                seniorPausedValue
                   ? 'border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/20'
                   : config?.seniorDepositsEnabled
                     ? 'border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/20'
@@ -205,14 +215,14 @@ export default function SafetyPage() {
                 <h3 className="font-bold text-lg">🛡️ Senior Deposits</h3>
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    seniorPaused
+                    seniorPausedValue
                       ? 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300'
                       : config?.seniorDepositsEnabled
                         ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300'
                         : 'bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300'
                   }`}
                 >
-                  {seniorPaused
+                  {seniorPausedValue
                     ? 'Paused'
                     : config?.seniorDepositsEnabled
                       ? 'Enabled'
@@ -220,7 +230,7 @@ export default function SafetyPage() {
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">
-                {seniorPaused
+                {seniorPausedValue
                   ? 'Senior deposits are manually paused by admin'
                   : config?.seniorDepositsEnabled
                     ? 'Senior deposits are currently accepting new funds'
@@ -236,7 +246,7 @@ export default function SafetyPage() {
 
             <div
               className={`p-6 rounded-lg border-2 ${
-                juniorPaused
+                juniorPausedValue
                   ? 'border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/20'
                   : config?.juniorDepositsEnabled
                     ? 'border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/20'
@@ -247,14 +257,14 @@ export default function SafetyPage() {
                 <h3 className="font-bold text-lg">⚔️ Junior Deposits</h3>
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    juniorPaused
+                    juniorPausedValue
                       ? 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300'
                       : config?.juniorDepositsEnabled
                         ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300'
                         : 'bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300'
                   }`}
                 >
-                  {juniorPaused
+                  {juniorPausedValue
                     ? 'Paused'
                     : config?.juniorDepositsEnabled
                       ? 'Enabled'
@@ -262,7 +272,7 @@ export default function SafetyPage() {
                 </span>
               </div>
               <p className="text-sm text-muted-foreground">
-                {juniorPaused
+                {juniorPausedValue
                   ? 'Junior deposits are manually paused by admin'
                   : config?.juniorDepositsEnabled
                     ? 'Junior deposits are currently accepting new funds'
@@ -325,7 +335,7 @@ export default function SafetyPage() {
               },
             ].map((item) => {
               const itemColor = getLevelColor(item.level);
-              const isCurrentLevel = level === item.level;
+              const isCurrentLevel = currentLevel === item.level;
 
               return (
                 <div

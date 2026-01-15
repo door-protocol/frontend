@@ -84,6 +84,23 @@ export function useEmergencyMode() {
 }
 
 /**
+ * Hook to read protocol fee rate
+ */
+export function useProtocolFeeRate() {
+  const { data, isLoading, error } = useReadContract({
+    address: ADDRESSES.coreVault,
+    abi: CoreVaultABI,
+    functionName: 'protocolFeeRate',
+  });
+
+  return {
+    protocolFeeRate: data as bigint | undefined,
+    isLoading,
+    error,
+  };
+}
+
+/**
  * Hook to harvest yield (requires KEEPER_ROLE)
  */
 export function useHarvest() {

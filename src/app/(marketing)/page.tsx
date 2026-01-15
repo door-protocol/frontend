@@ -15,6 +15,7 @@ import { useDOR } from '@/hooks/useRateOracle';
 import { estimateJuniorAPY } from '@/lib/utils/apyCalculations';
 import { formatUnits } from 'viem';
 import { formatCompactNumber } from '@/lib/utils';
+import { ESTIMATED_VAULT_YIELD_BPS } from '@/lib/config';
 
 export default function Home() {
   // Fetch real contract data
@@ -29,7 +30,7 @@ export default function Home() {
           vaultStats.seniorPrincipal,
           vaultStats.juniorPrincipal,
           vaultStats.currentSeniorRate,
-          800, // Estimated 8% vault yield
+          ESTIMATED_VAULT_YIELD_BPS,
         );
         const juniorAPY =
           estimatedJuniorAPY !== null ? estimatedJuniorAPY / 100 : 0;
