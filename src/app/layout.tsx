@@ -14,6 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : `http://localhost:${process.env.PORT || 3000}`,
+  ),
   title: 'DOOR Protocol - DeFi Fixed Income',
   description:
     'Decentralized Offered Rate protocol. Opening the door to DeFi fixed income with predictable yields.',

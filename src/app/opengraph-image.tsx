@@ -9,14 +9,15 @@ export const size = {
   height: 630,
 };
 export const contentType = 'image/png';
+export const runtime = 'nodejs';
 
 // Image generation
 export default async function OGImage() {
   // Read the logo file and convert to base64
-  const logoPath = join(process.cwd(), 'public', 'door-logo.webp');
+  const logoPath = join(process.cwd(), 'public', 'door-logo.png');
   const logoBuffer = await readFile(logoPath);
   const logoBase64 = logoBuffer.toString('base64');
-  const logoDataUrl = `data:image/webp;base64,${logoBase64}`;
+  const logoDataUrl = `data:image/png;base64,${logoBase64}`;
 
   return new ImageResponse(
     <div
@@ -27,17 +28,19 @@ export default async function OGImage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #2563EB 0%, #EA580C 100%)',
-        fontFamily: 'system-ui, sans-serif',
+        backgroundColor: '#2563EB',
+        backgroundImage: 'linear-gradient(135deg, #2563EB 0%, #EA580C 100%)',
       }}
     >
       {/* Background Pattern */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
-          background:
-            'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(255,255,255,0.05)',
         }}
       />
 
@@ -48,7 +51,6 @@ export default async function OGImage() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '40px',
           zIndex: 1,
         }}
       >
@@ -63,9 +65,10 @@ export default async function OGImage() {
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
+            marginBottom: '40px',
           }}
         >
-          <img src={logoDataUrl} width="100" height="100" alt="DOOR Logo" />
+          <img src={logoDataUrl} width={100} height={100} alt="DOOR Logo" />
         </div>
 
         {/* Title */}
@@ -74,7 +77,6 @@ export default async function OGImage() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '20px',
           }}
         >
           <h1
@@ -85,6 +87,7 @@ export default async function OGImage() {
               margin: 0,
               textAlign: 'center',
               letterSpacing: '-0.02em',
+              marginBottom: '20px',
             }}
           >
             DOOR Protocol
@@ -106,33 +109,29 @@ export default async function OGImage() {
         <div
           style={{
             display: 'flex',
-            gap: '40px',
-            marginTop: '20px',
+            marginTop: '40px',
           }}
         >
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
               color: 'white',
-              fontSize: '24px',
+              fontSize: '28px',
+              marginRight: '40px',
             }}
           >
-            <span>🛡️</span>
-            <span>5.5% Senior APY</span>
+            Senior APY: 5.5%
           </div>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
               color: 'white',
-              fontSize: '24px',
+              fontSize: '28px',
             }}
           >
-            <span>⚔️</span>
-            <span>15-30% Junior APY</span>
+            Junior APY: 15-30%
           </div>
         </div>
       </div>

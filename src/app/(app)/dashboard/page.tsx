@@ -4,17 +4,67 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import RatioGauge from '@/components/core/RatioGauge';
 import EpochTimer, { EpochState } from '@/components/core/EpochTimer';
 import { formatCompactNumber } from '@/lib/utils';
-import {
-  mockVaultStats,
-  mockCurrentEpoch,
-  mockDORData,
-} from '@/mock/vaultData';
 import { MIN_JUNIOR_RATIO } from '@/lib/utils/constants';
+import { useCoreVaultStats } from '@/hooks/useCoreVault';
+import {
+  useCurrentEpochId,
+  useEpoch,
+  useCurrentEpochState,
+} from '@/hooks/useEpochManager';
+import { formatUnits } from 'viem';
+import {
+  estimateJuniorAPY,
+  calculateVaultAPY,
+  formatAPY,
+} from '@/lib/utils/apyCalculations';
 
 export default function DashboardPage() {
-  const stats = mockVaultStats;
-  const epoch = mockCurrentEpoch;
-  const dor = mockDORData;
+  // Fetch real contract data
+  const { stats: vaultStats } = useCoreVaultStats();
+  const { currentEpochId } = useCurrentEpochId();
+  const { state: epochState } = useCurrentEpochState();
+  const { epoch: currentEpoch } = useEpoch(currentEpochId);
+
+  // Calculate stats from contract data
+  const stats = vaultStats
+    ? (() => {
+        const seniorAPY = Number(vaultStats.currentSeniorRate) / 100;
+        const estimatedJuniorAPY = estimateJuniorAPY(
+          vaultStats.seniorPrincipal,
+          vaultStats.juniorPrincipal,
+          vaultStats.currentSeniorRate,
+          800, // Estimated 8% vault yield
+        );
+        const juniorAPY =
+          estimatedJuniorAPY !== null ? estimatedJuniorAPY / 100 : 0;
+
+        return {
+          tvl: formatUnits(vaultStats.totalAssets, 6),
+          seniorTVL: formatUnits(vaultStats.seniorPrincipal, 6),
+          juniorTVL: formatUnits(vaultStats.juniorPrincipal, 6),
+          seniorAPY: seniorAPY.toFixed(1),
+          juniorAPY: juniorAPY.toFixed(1),
+          juniorRatio: Number(vaultStats.juniorRatio) / 100,
+        };
+      })()
+    : {
+        tvl: '0',
+        seniorTVL: '0',
+        juniorTVL: '0',
+        seniorAPY: '0',
+        juniorAPY: '0',
+        juniorRatio: 0,
+      };
+
+  // Mock DOR data (would need oracle contract integration)
+  const dor = {
+    currentRate: 5.2,
+    sources: [
+      { name: 'mETH Staking', rate: 6.5, weight: 40 },
+      { name: 'Lending Protocol', rate: 4.8, weight: 35 },
+      { name: 'DEX LP', rate: 3.5, weight: 25 },
+    ],
+  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
@@ -30,19 +80,21 @@ export default function DashboardPage() {
       </div>
 
       {/* Epoch Timer */}
-      <div className="animate-fade-in-up">
-        <EpochTimer
-          currentEpoch={epoch.epochId}
-          epochState={
-            epoch.state === 'OPEN'
-              ? EpochState.OPEN
-              : epoch.state === 'LOCKED'
-                ? EpochState.LOCKED
-                : EpochState.SETTLED
-          }
-          endTime={epoch.endTime}
-        />
-      </div>
+      {currentEpoch && (
+        <div className="animate-fade-in-up">
+          <EpochTimer
+            currentEpoch={Number(currentEpoch.id)}
+            epochState={
+              epochState === 0
+                ? EpochState.OPEN
+                : epochState === 1
+                  ? EpochState.LOCKED
+                  : EpochState.SETTLED
+            }
+            endTime={Number(currentEpoch.endTime)}
+          />
+        </div>
+      )}
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

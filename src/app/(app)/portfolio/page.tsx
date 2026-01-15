@@ -4,16 +4,60 @@ import { useAccount } from 'wagmi';
 import PositionCard from '@/components/portfolio/PositionCard';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle, Wallet } from 'lucide-react';
-import { mockUserPosition, mockCurrentEpoch } from '@/mock/vaultData';
 import { formatNumber } from '@/lib/utils';
+import { useSeniorVaultBalance } from '@/hooks/useSeniorVault';
+import { useJuniorVaultBalance } from '@/hooks/useJuniorVault';
+import { useCurrentEpochId } from '@/hooks/useEpochManager';
+import { useCoreVaultStats } from '@/hooks/useCoreVault';
+import { formatUnits } from 'viem';
+import { estimateJuniorAPY } from '@/lib/utils/apyCalculations';
 
 export default function PortfolioPage() {
   const { address, isConnected } = useAccount();
 
-  // Mock user position
-  const position = mockUserPosition;
-  const hasSeniorPosition = Number(position.senior.balance) > 0;
-  const hasJuniorPosition = Number(position.junior.balance) > 0;
+  // Fetch real contract data
+  const { balance: seniorBalance } = useSeniorVaultBalance();
+  const { balance: juniorBalance } = useJuniorVaultBalance();
+  const { currentEpochId } = useCurrentEpochId();
+  const { stats } = useCoreVaultStats();
+
+  // Calculate positions
+  const seniorBalanceNum = seniorBalance
+    ? Number(formatUnits(seniorBalance, 6))
+    : 0;
+  const juniorBalanceNum = juniorBalance
+    ? Number(formatUnits(juniorBalance, 6))
+    : 0;
+  const totalValue = seniorBalanceNum + juniorBalanceNum;
+
+  const hasSeniorPosition = seniorBalanceNum > 0;
+  const hasJuniorPosition = juniorBalanceNum > 0;
+
+  // Calculate APYs from stats
+  const seniorAPY = stats ? Number(stats.currentSeniorRate) / 100 : 5.5;
+  const juniorAPYEstimate = stats
+    ? estimateJuniorAPY(
+        stats.seniorPrincipal,
+        stats.juniorPrincipal,
+        stats.currentSeniorRate,
+        800,
+      )
+    : null;
+  const juniorAPY = juniorAPYEstimate !== null ? juniorAPYEstimate / 100 : 0;
+
+  const position = {
+    senior: {
+      balance: seniorBalanceNum.toString(),
+      claimableYield: '0', // Would need to track yields
+      depositEpoch: 1,
+    },
+    junior: {
+      balance: juniorBalanceNum.toString(),
+      claimableYield: '0', // Would need to track yields
+      depositEpoch: 1,
+    },
+    totalValue: totalValue.toString(),
+  };
 
   if (!isConnected) {
     return (
@@ -72,9 +116,9 @@ export default function PortfolioPage() {
           tranche="senior"
           balance={position.senior.balance}
           claimableYield={position.senior.claimableYield}
-          apy={5.5}
+          apy={seniorAPY}
           depositEpoch={position.senior.depositEpoch}
-          currentEpoch={mockCurrentEpoch.epochId}
+          currentEpoch={currentEpochId ? Number(currentEpochId) : 1}
         />
       )}
 
@@ -84,9 +128,9 @@ export default function PortfolioPage() {
           tranche="junior"
           balance={position.junior.balance}
           claimableYield={position.junior.claimableYield}
-          apy={18.2}
+          apy={juniorAPY}
           depositEpoch={position.junior.depositEpoch}
-          currentEpoch={mockCurrentEpoch.epochId}
+          currentEpoch={currentEpochId ? Number(currentEpochId) : 1}
         />
       )}
 

@@ -13,8 +13,10 @@ import { ThemeToggle } from './ThemeToggle';
 const navItems = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Deposit', href: '/deposit' },
+  { label: 'Withdraw', href: '/withdraw' },
   { label: 'Portfolio', href: '/portfolio' },
   { label: 'Analytics', href: '/analytics' },
+  { label: 'Safety', href: '/safety' },
 ];
 
 export function Header() {

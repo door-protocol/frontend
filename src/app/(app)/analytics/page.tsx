@@ -13,9 +13,45 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { formatNumber } from '@/lib/utils';
+import { useCoreVaultStats } from '@/hooks/useCoreVault';
+import { formatUnits } from 'viem';
+import {
+  estimateJuniorAPY,
+  calculateVaultAPY,
+} from '@/lib/utils/apyCalculations';
 
 export default function AnalyticsPage() {
+  // Fetch real contract data
+  const { stats } = useCoreVaultStats();
+
+  // For now, use mock historical data
+  // In production, would fetch historical data from subgraph or events
   const rateHistory = generateMockRateHistory(30);
+
+  // Calculate current metrics from contract
+  const seniorAPY = stats ? Number(stats.currentSeniorRate) / 100 : 5.52;
+  const juniorAPYEstimate = stats
+    ? estimateJuniorAPY(
+        stats.seniorPrincipal,
+        stats.juniorPrincipal,
+        stats.currentSeniorRate,
+        800,
+      )
+    : null;
+  const juniorAPY = juniorAPYEstimate !== null ? juniorAPYEstimate / 100 : 0;
+
+  const vaultAPY = stats
+    ? calculateVaultAPY(
+        stats.seniorPrincipal,
+        stats.juniorPrincipal,
+        seniorAPY * 100,
+        juniorAPY * 100,
+      ) / 100
+    : 0;
+
+  const juniorRatio = stats ? Number(stats.juniorRatio) / 100 : 25.0;
+  const seniorTVL = stats ? Number(formatUnits(stats.seniorPrincipal, 6)) : 0;
+  const juniorTVL = stats ? Number(formatUnits(stats.juniorPrincipal, 6)) : 0;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -87,21 +123,21 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Average Senior APY</span>
+              <span className="text-muted-foreground">Current Senior APY</span>
               <span className="font-medium text-blue-600 dark:text-blue-400 ">
-                {formatNumber(5.52)}%
+                {formatNumber(seniorAPY)}%
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Average Junior APY</span>
+              <span className="text-muted-foreground">Current Junior APY</span>
               <span className="font-medium text-orange-600 dark:text-orange-400 ">
-                {formatNumber(18.15)}%
+                {formatNumber(juniorAPY)}%
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Average Vault APY</span>
+              <span className="text-muted-foreground">Current Vault APY</span>
               <span className="font-medium text-green-600 dark:text-green-400">
-                {formatNumber(7.05)}%
+                {formatNumber(vaultAPY)}%
               </span>
             </div>
           </CardContent>
@@ -113,14 +149,24 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Junior Buffer</span>
-              <span className="font-medium text-green-600 dark:text-green-400">
-                25.0% (Healthy)
+              <span className="text-muted-foreground">Junior Ratio</span>
+              <span
+                className={`font-medium ${juniorRatio >= 20 ? 'text-green-600 dark:text-green-400' : juniorRatio >= 10 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'}`}
+              >
+                {juniorRatio.toFixed(1)}% (
+                {juniorRatio >= 20
+                  ? 'Healthy'
+                  : juniorRatio >= 10
+                    ? 'Warning'
+                    : 'Critical'}
+                )
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Senior Coverage</span>
-              <span className="font-medium">100%</span>
+              <span className="font-medium">
+                {stats?.isHealthy ? '100%' : 'At Risk'}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Protocol Fee</span>
@@ -141,12 +187,14 @@ export default function AnalyticsPage() {
             <div>
               <div className="flex justify-between mb-2 text-sm">
                 <span className="text-muted-foreground">🛡️ Senior Tranche</span>
-                <span className="font-medium">$937,500 (75%)</span>
+                <span className="font-medium">
+                  ${formatNumber(seniorTVL)} ({(100 - juniorRatio).toFixed(1)}%)
+                </span>
               </div>
               <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 dark:bg-blue-600 "
-                  style={{ width: '75%' }}
+                  style={{ width: `${100 - juniorRatio}%` }}
                 />
               </div>
             </div>
@@ -155,12 +203,14 @@ export default function AnalyticsPage() {
             <div>
               <div className="flex justify-between mb-2 text-sm">
                 <span className="text-muted-foreground">⚔️ Junior Tranche</span>
-                <span className="font-medium">$312,500 (25%)</span>
+                <span className="font-medium">
+                  ${formatNumber(juniorTVL)} ({juniorRatio.toFixed(1)}%)
+                </span>
               </div>
               <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-orange-500 dark:bg-orange-600 "
-                  style={{ width: '25%' }}
+                  style={{ width: `${juniorRatio}%` }}
                 />
               </div>
             </div>

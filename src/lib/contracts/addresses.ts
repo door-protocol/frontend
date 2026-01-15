@@ -5,9 +5,17 @@
 import { CoreVaultABI } from './CoreVaultABI';
 import { SeniorVaultABI } from './SeniorVaultABI';
 import { JuniorVaultABI } from './JuniorVaultABI';
+import { EpochManagerABI } from './EpochManagerABI';
+import { SafetyModuleABI } from './SafetyModuleABI';
 
 // Export ABIs
-export { CoreVaultABI, SeniorVaultABI, JuniorVaultABI };
+export {
+  CoreVaultABI,
+  SeniorVaultABI,
+  JuniorVaultABI,
+  EpochManagerABI,
+  SafetyModuleABI,
+};
 
 /**
  * =============================================================================

@@ -8,23 +8,84 @@ import TrancheSelector, {
 import DepositInput from '@/components/core/DepositInput';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import { SENIOR_TARGET_APY, JUNIOR_APY_RANGE } from '@/lib/utils/constants';
+import {
+  useDepositToSeniorVault,
+  useApproveUSDCForSeniorVault,
+} from '@/hooks/useSeniorVault';
+import {
+  useDepositToJuniorVault,
+  useApproveUSDCForJuniorVault,
+} from '@/hooks/useJuniorVault';
+import { useUSDCBalance } from '@/hooks/useUSDC';
+import {
+  useSeniorTargetAPY,
+  useCanDepositSenior,
+  useCanDepositJunior,
+} from '@/hooks/useSafetyModule';
+import { ADDRESSES } from '@/lib/contracts/addresses';
+import { parseUnits, formatUnits } from 'viem';
 
 export default function DepositPage() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const [selectedTranche, setSelectedTranche] = useState<TrancheType>('senior');
   const [amount, setAmount] = useState('');
 
-  // Mock balance
-  const mockBalance = 10000;
+  // Fetch USDC balance
+  const { balance: usdcBalance } = useUSDCBalance();
+  const balance = usdcBalance ? Number(formatUnits(usdcBalance, 6)) : 0;
+
+  // Safety checks
+  const amountBigInt = amount ? parseUnits(amount, 6) : BigInt(0);
+  const { result: seniorCheck } = useCanDepositSenior(amountBigInt);
+  const { result: juniorCheck } = useCanDepositJunior();
+  const { targetAPY } = useSeniorTargetAPY();
+
+  // Deposit hooks
+  const { approve: approveSenior, isPending: isApprovingSenior } =
+    useApproveUSDCForSeniorVault();
+  const { approve: approveJunior, isPending: isApprovingJunior } =
+    useApproveUSDCForJuniorVault();
+  const {
+    deposit: depositSenior,
+    isPending: isDepositingSenior,
+    isSuccess: isSeniorSuccess,
+  } = useDepositToSeniorVault();
+  const {
+    deposit: depositJunior,
+    isPending: isDepositingJunior,
+    isSuccess: isJuniorSuccess,
+  } = useDepositToJuniorVault();
+
+  const seniorAPY = targetAPY
+    ? (Number(targetAPY) / 100).toFixed(1)
+    : SENIOR_TARGET_APY.toString();
+  const depositAllowed =
+    selectedTranche === 'senior' ? seniorCheck?.[0] : juniorCheck?.[0];
+  const depositReason =
+    selectedTranche === 'senior' ? seniorCheck?.[1] : juniorCheck?.[1];
+
+  const handleApprove = async () => {
+    if (!amount || !isConnected) return;
+    const amountBigInt = parseUnits(amount, 6);
+
+    if (selectedTranche === 'senior') {
+      approveSenior(amountBigInt);
+    } else {
+      approveJunior(amountBigInt);
+    }
+  };
 
   const handleDeposit = async () => {
-    if (!amount || !isConnected) return;
+    if (!amount || !isConnected || !address) return;
+    const amountBigInt = parseUnits(amount, 6);
 
-    // Mock deposit logic
-    console.log('Depositing:', amount, 'to', selectedTranche);
-    alert(`Mock deposit: ${amount} USDT to ${selectedTranche} tranche`);
+    if (selectedTranche === 'senior') {
+      depositSenior(amountBigInt, address);
+    } else {
+      depositJunior(amountBigInt, address);
+    }
   };
 
   return (
@@ -57,11 +118,28 @@ export default function DepositPage() {
         </Card>
       )}
 
+      {/* Safety Warning */}
+      {depositAllowed === false && depositReason && (
+        <Card className="border-2 border-red-200 dark:border-red-900 bg-linear-to-br from-red-50/50 dark:from-red-950/20 to-red-100/50 dark:to-red-950/30 shadow-lg">
+          <CardContent className="p-6 flex items-center gap-4">
+            <div className="p-3 rounded-full bg-red-100 dark:bg-red-950/30">
+              <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <p className="font-semibold text-red-900 dark:text-red-300 mb-1">
+                Deposits Not Allowed
+              </p>
+              <p className="text-sm text-muted-foreground">{depositReason}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Tranche Selection */}
       <TrancheSelector
         selectedTranche={selectedTranche}
         onSelect={setSelectedTranche}
-        seniorAPY={SENIOR_TARGET_APY}
+        seniorAPY={Number(seniorAPY)}
         juniorAPYRange={JUNIOR_APY_RANGE}
       />
 
@@ -69,9 +147,9 @@ export default function DepositPage() {
       <DepositInput
         value={amount}
         onChange={setAmount}
-        balance={mockBalance}
+        balance={balance}
         apy={
-          selectedTranche === 'senior' ? SENIOR_TARGET_APY : JUNIOR_APY_RANGE[0]
+          selectedTranche === 'senior' ? Number(seniorAPY) : JUNIOR_APY_RANGE[0]
         }
       />
 
@@ -121,19 +199,55 @@ export default function DepositPage() {
         </Card>
       )}
 
-      {/* Deposit Button */}
-      <Button
-        onClick={handleDeposit}
-        disabled={!isConnected || !amount || Number(amount) <= 0}
-        className={`w-full text-lg py-7 shadow-2xl ${
-          selectedTranche === 'senior'
-            ? 'shadow-blue-500/30 hover:shadow-blue-500/40'
-            : 'shadow-orange-500/30 hover:shadow-orange-500/40'
-        }`}
-        size="lg"
-      >
-        {isConnected ? 'Deposit Now' : 'Connect Wallet to Deposit'}
-      </Button>
+      {/* Approve & Deposit Buttons */}
+      <div className="space-y-3">
+        <Button
+          onClick={handleApprove}
+          disabled={
+            !isConnected ||
+            !amount ||
+            Number(amount) <= 0 ||
+            depositAllowed === false ||
+            isApprovingSenior ||
+            isApprovingJunior
+          }
+          className="w-full"
+          size="lg"
+          variant="outline"
+        >
+          {isApprovingSenior || isApprovingJunior
+            ? 'Approving...'
+            : 'Approve USDC'}
+        </Button>
+
+        <Button
+          onClick={handleDeposit}
+          disabled={
+            !isConnected ||
+            !amount ||
+            Number(amount) <= 0 ||
+            depositAllowed === false ||
+            isDepositingSenior ||
+            isDepositingJunior
+          }
+          className={`w-full text-lg py-7 shadow-2xl ${
+            selectedTranche === 'senior'
+              ? 'shadow-blue-500/30 hover:shadow-blue-500/40'
+              : 'shadow-orange-500/30 hover:shadow-orange-500/40'
+          }`}
+          size="lg"
+        >
+          {!isConnected
+            ? 'Connect Wallet to Deposit'
+            : isDepositingSenior || isDepositingJunior
+              ? 'Depositing...'
+              : isSeniorSuccess || isJuniorSuccess
+                ? 'Deposit Successful!'
+                : depositAllowed === false
+                  ? 'Deposits Not Allowed'
+                  : 'Deposit Now'}
+        </Button>
+      </div>
 
       {/* Info */}
       <Card className="border-2 border-blue-200 dark:border-blue-900 bg-linear-to-br from-blue-50/50 dark:from-blue-950/20 to-blue-100/50 dark:to-blue-950/30 shadow-lg">

@@ -84,23 +84,6 @@ export function useEmergencyMode() {
 }
 
 /**
- * Hook to read current epoch ID
- */
-export function useCurrentEpochId() {
-  const { data, isLoading, error } = useReadContract({
-    address: ADDRESSES.coreVault,
-    abi: CoreVaultABI,
-    functionName: 'currentEpochId',
-  });
-
-  return {
-    currentEpochId: data as bigint | undefined,
-    isLoading,
-    error,
-  };
-}
-
-/**
  * Hook to harvest yield (requires KEEPER_ROLE)
  */
 export function useHarvest() {
