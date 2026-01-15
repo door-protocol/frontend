@@ -8,13 +8,12 @@ const footerLinks = {
     { label: 'Analytics', href: '/analytics' },
   ],
   Resources: [
-    { label: 'Documentation', href: '#' },
-    { label: 'GitHub', href: '#' },
-    { label: 'Discord', href: '#' },
-  ],
-  Legal: [
-    { label: 'Terms of Service', href: '#' },
-    { label: 'Privacy Policy', href: '#' },
+    {
+      label: 'Documentation',
+      href: 'https://github.com/door-protocol/.github',
+    },
+    { label: 'GitHub', href: 'https://github.com/door-protocol' },
+    { label: 'X (Twitter)', href: 'https://x.com/door_protocol' },
   ],
 };
 
@@ -22,7 +21,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-background mt-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 gap-8 md:gap-x-12 md:grid-cols-6">
+        <div className="grid grid-cols-1 gap-8 md:gap-x-12 md:grid-cols-5">
           {/* Brand */}
           <div className="space-y-3 text-center md:text-left md:col-span-3">
             <div className="flex items-center justify-center md:justify-start space-x-2">
@@ -36,8 +35,8 @@ export function Footer() {
               <span className="font-bold text-foreground">DOOR Protocol</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm md:max-w-none">
-              Opening the door to DeFi fixed income. Decentralized Offered Rate
-              infrastructure powered by Mantle.
+              Structured DeFi product with waterfall distribution. Risk-adjusted
+              yields through dual-tranche architecture on Mantle Network.
             </p>
           </div>
 
@@ -53,12 +52,23 @@ export function Footer() {
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.href.startsWith('http') ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

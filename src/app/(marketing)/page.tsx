@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,8 +10,43 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { ArrowRight, Shield, TrendingUp, Lock } from 'lucide-react';
+import { useCoreVaultStats } from '@/hooks/useCoreVault';
+import { useDOR } from '@/hooks/useRateOracle';
+import { estimateJuniorAPY } from '@/lib/utils/apyCalculations';
+import { formatUnits } from 'viem';
+import { formatCompactNumber } from '@/lib/utils';
 
 export default function Home() {
+  // Fetch real contract data
+  const { stats: vaultStats } = useCoreVaultStats();
+  const { dor } = useDOR();
+
+  // Calculate stats from contract data
+  const stats = vaultStats
+    ? (() => {
+        const seniorAPY = Number(vaultStats.currentSeniorRate) / 100;
+        const estimatedJuniorAPY = estimateJuniorAPY(
+          vaultStats.seniorPrincipal,
+          vaultStats.juniorPrincipal,
+          vaultStats.currentSeniorRate,
+          800, // Estimated 8% vault yield
+        );
+        const juniorAPY =
+          estimatedJuniorAPY !== null ? estimatedJuniorAPY / 100 : 0;
+
+        return {
+          tvl: formatUnits(vaultStats.totalAssets, 6),
+          seniorAPY: seniorAPY.toFixed(1),
+          juniorAPY: juniorAPY.toFixed(1),
+          dor: dor ? (Number(dor) / 100).toFixed(2) : '0.00',
+        };
+      })()
+    : {
+        tvl: '1250000', // Fallback
+        seniorAPY: '5.5',
+        juniorAPY: '22.5',
+        dor: '4.62',
+      };
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -38,8 +75,8 @@ export default function Home() {
             </h1>
 
             <p className="max-w-200 text-xl text-muted-foreground sm:text-2xl leading-relaxed">
-              Decentralized Offered Rate protocol. Get predictable yields with
-              Senior/Junior tranches powered by Mantle.
+              Structured DeFi product with waterfall distribution. Risk-adjusted
+              yields through dual-tranche architecture on Mantle Network.
             </p>
           </div>
 
@@ -92,10 +129,11 @@ export default function Home() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Why DOOR Protocol?
+            Risk-Adjusted DeFi Yields
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Choose your strategy. Stable income or aggressive growth.
+            Choose your risk profile. Conservative stability or leveraged
+            growth.
           </p>
         </div>
 
@@ -105,10 +143,12 @@ export default function Home() {
               <div className="mb-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
                 <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
               </div>
-              <CardTitle className="text-xl">Stable Returns</CardTitle>
+              <CardTitle className="text-xl">
+                Senior Tranche (DOOR-FIX)
+              </CardTitle>
               <CardDescription className="text-base">
-                Senior tranche offers 5-6% target APY with priority yield
-                distribution
+                Fixed-rate {stats.seniorAPY}% APY with waterfall priority. First
+                in line for yield distribution.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -146,9 +186,12 @@ export default function Home() {
               <div className="mb-4 p-3 rounded-xl bg-purple-50 dark:bg-purple-950/30 w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
                 <TrendingUp className="h-8 w-8 text-orange-600 dark:text-purple-400" />
               </div>
-              <CardTitle className="text-xl">High Yield Potential</CardTitle>
+              <CardTitle className="text-xl">
+                Junior Tranche (DOOR-BOOST)
+              </CardTitle>
               <CardDescription className="text-base">
-                Junior tranche targets 15-30% APY with leverage effect
+                Amplified returns at {stats.juniorAPY}% APY. Captures excess
+                yield with 5-10x leverage potential.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -186,9 +229,10 @@ export default function Home() {
               <div className="mb-4 p-3 rounded-xl bg-secondary w-fit group-hover:scale-110 transition-transform duration-500 ease-in-out">
                 <Lock className="h-8 w-8 text-muted-foreground" />
               </div>
-              <CardTitle className="text-xl">DOR Infrastructure</CardTitle>
+              <CardTitle className="text-xl">DOOR Rate Oracle (DOR)</CardTitle>
               <CardDescription className="text-base">
-                First decentralized benchmark rate for DeFi
+                Decentralized benchmark rate with multi-source aggregation and
+                challenge mechanism.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -216,7 +260,7 @@ export default function Home() {
         <div className="grid gap-8 sm:gap-10 md:gap-12 grid-cols-2 md:grid-cols-4 text-center">
           <div className="group">
             <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-blue-600 dark:text-blue-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
-              5.5%
+              {stats.seniorAPY}%
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Senior Target APY
@@ -224,23 +268,23 @@ export default function Home() {
           </div>
           <div className="group">
             <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-orange-600 dark:text-purple-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out">
-              15-30%
+              {stats.juniorAPY}%
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Junior Target APY
+              Junior Current APY
             </div>
           </div>
           <div className="group">
-            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out text-white">
-              $1.25M
+            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out text-emerald-600 dark:text-emerald-400">
+              ${formatCompactNumber(Number(stats.tvl))}
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Total Value Locked
             </div>
           </div>
           <div className="group">
-            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out text-white">
-              4.62%
+            <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500 ease-in-out text-indigo-600 dark:text-indigo-400">
+              {stats.dor}%
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
               Current DOR Rate
@@ -259,8 +303,8 @@ export default function Home() {
               Ready to Start Earning?
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join DOOR Protocol and choose between stable returns or high-yield
-              opportunities. Connect your wallet to get started.
+              Experience structured DeFi yields with waterfall distribution.
+              Choose Senior for stability or Junior for leveraged growth.
             </p>
             <Link href="/deposit">
               <Button

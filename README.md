@@ -2,7 +2,7 @@
 
 > Opening the door to DeFi fixed income
 
-Decentralized Offered Rate (DOR) protocol frontend built with Next.js, TypeScript, and TailwindCSS on Mantle Network.
+Structured DeFi product with waterfall distribution. Risk-adjusted yields through dual-tranche architecture on Mantle Network.
 
 ## 🚀 Live Demo
 
@@ -11,12 +11,13 @@ The project is deployed and live at:
 
 ## Features
 
-- 🛡️ **Senior Tranche (DOOR-FIX)**: Stable 5-6% APY with priority yield distribution
-- ⚔️ **Junior Tranche (DOOR-BOOST)**: High-yield 15-30% APY with leverage effect
-- 📊 **DOR Benchmark Rate**: First decentralized benchmark rate for DeFi
+- 🛡️ **Senior Tranche (DOOR-FIX)**: Fixed-rate APY with waterfall priority and junior buffer protection
+- ⚔️ **Junior Tranche (DOOR-BOOST)**: Amplified returns with 5-10x leverage potential on excess yields
+- 📊 **DOOR Rate Oracle (DOR)**: Decentralized benchmark rate with multi-source aggregation
+- 💧 **Waterfall Distribution**: Automated yield routing based on priority rules
 - 🌓 **Dark/Light Mode**: Full theme support with next-themes
 - 📱 **Responsive Design**: Mobile-first approach with TailwindCSS
-- 🔗 **Mantle Integration**: Optimized for Mantle Network
+- 🔗 **Mantle Integration**: Native support for Mantle Network and mETH staking
 
 ## Tech Stack
 
@@ -110,8 +111,8 @@ The app supports both dark and light themes using next-themes. Toggle in the hea
 
 ### Tranche System
 
-- **Senior (DOOR-FIX)**: Lower risk, stable 5-6% APY, priority yield
-- **Junior (DOOR-BOOST)**: Higher risk, 15-30% APY, leverage effect
+- **Senior (DOOR-FIX)**: Lower risk, fixed-rate APY, waterfall priority, first-loss protection
+- **Junior (DOOR-BOOST)**: Higher risk, amplified APY with 5-10x leverage, captures excess yields
 
 ## Commands
 
@@ -148,4 +149,4 @@ The app is configured for deployment on Vercel. Simply connect your GitHub repos
 
 ---
 
-Built with ❤️ on Mantle | Powered by Treehouse DOR | Secured by RWA
+Built on Mantle | Powered by Treehouse DOR | Secured by RWA

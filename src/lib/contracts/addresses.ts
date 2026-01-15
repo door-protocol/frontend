@@ -7,6 +7,7 @@ import { SeniorVaultABI } from './SeniorVaultABI';
 import { JuniorVaultABI } from './JuniorVaultABI';
 import { EpochManagerABI } from './EpochManagerABI';
 import { SafetyModuleABI } from './SafetyModuleABI';
+import { RateOracleABI } from './RateOracleABI';
 
 // Export ABIs
 export {
@@ -15,6 +16,7 @@ export {
   JuniorVaultABI,
   EpochManagerABI,
   SafetyModuleABI,
+  RateOracleABI,
 };
 
 /**

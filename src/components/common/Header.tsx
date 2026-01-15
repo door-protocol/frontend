@@ -6,9 +6,9 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from 'react';
 import { ThemeToggle } from './ThemeToggle';
+import { CustomConnectButton } from './CustomConnectButton';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -44,13 +44,13 @@ export function Header() {
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden lg:flex items-center space-x-1 text-sm font-medium">
+        <nav className="hidden lg:flex items-center space-x-0.5 text-sm font-medium flex-1 justify-center max-w-2xl">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                'relative px-3 py-2 rounded-lg transition-all duration-500 ease-in-out whitespace-nowrap',
+                'relative px-2 py-2 rounded-lg transition-all duration-500 ease-in-out whitespace-nowrap text-xs xl:text-sm',
                 pathname === item.href
                   ? 'text-foreground font-semibold'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary',
@@ -65,13 +65,13 @@ export function Header() {
         </nav>
 
         {/* Right Side - Theme Toggle & Connect Wallet */}
-        <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* Theme Toggle */}
           <ThemeToggle />
 
           {/* Connect Wallet - Hidden on smallest screens */}
-          <div className="hidden sm:block scale-95 hover:scale-100 transition-transform duration-500 ease-in-out">
-            <ConnectButton />
+          <div className="hidden sm:block">
+            <CustomConnectButton />
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -112,7 +112,7 @@ export function Header() {
             ))}
             {/* Connect Wallet in mobile menu */}
             <div className="sm:hidden pt-2 border-t">
-              <ConnectButton />
+              <CustomConnectButton />
             </div>
           </nav>
         </div>
