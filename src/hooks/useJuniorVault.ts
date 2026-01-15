@@ -11,6 +11,23 @@ import {
 } from '@/lib/contracts/addresses';
 
 /**
+ * Hook to check if Junior vault is initialized
+ */
+export function useJuniorVaultInitialized() {
+  const { data, isLoading, error } = useReadContract({
+    address: ADDRESSES.juniorVault,
+    abi: JuniorVaultABI,
+    functionName: 'initialized',
+  });
+
+  return {
+    initialized: data as boolean | undefined,
+    isLoading,
+    error,
+  };
+}
+
+/**
  * Hook to read user's Junior vault balance
  */
 export function useJuniorVaultBalance() {

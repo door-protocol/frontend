@@ -64,6 +64,7 @@ export default function DepositInput({
                 variant="ghost"
                 size="sm"
                 onClick={handleMaxClick}
+                disabled={!balance || balance === 0}
                 className="text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-50 dark:hover:bg-blue-950/30 px-4"
               >
                 MAX
@@ -79,6 +80,7 @@ export default function DepositInput({
                 variant="outline"
                 size="sm"
                 onClick={() => handlePercentClick(percent)}
+                disabled={!balance || balance === 0}
                 className="font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {percent}%

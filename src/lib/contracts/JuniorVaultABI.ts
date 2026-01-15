@@ -1,5 +1,4 @@
 export const JuniorVaultABI = [
-  [
     {
       type: 'constructor',
       inputs: [
@@ -1363,5 +1362,4 @@ export const JuniorVaultABI = [
       name: 'ZeroAddress',
       inputs: [],
     },
-  ],
 ] as const;

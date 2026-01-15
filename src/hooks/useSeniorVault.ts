@@ -11,6 +11,23 @@ import {
 } from '@/lib/contracts/addresses';
 
 /**
+ * Hook to check if Senior vault is initialized
+ */
+export function useSeniorVaultInitialized() {
+  const { data, isLoading, error } = useReadContract({
+    address: ADDRESSES.seniorVault,
+    abi: SeniorVaultABI,
+    functionName: 'initialized',
+  });
+
+  return {
+    initialized: data as boolean | undefined,
+    isLoading,
+    error,
+  };
+}
+
+/**
  * Hook to read user's Senior vault balance
  */
 export function useSeniorVaultBalance() {

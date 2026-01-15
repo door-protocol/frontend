@@ -98,7 +98,7 @@ export function useIsDepositAllowed(isSenior: boolean) {
  * Hook to check if senior deposit is allowed for specific amount
  */
 export function useCanDepositSenior(amount?: bigint) {
-  const { data, isLoading, error } = useReadContract({
+  const { data, isLoading, error, refetch } = useReadContract({
     address: ADDRESSES.safetyModule,
     abi: SafetyModuleABI,
     functionName: 'canDepositSenior',
@@ -112,6 +112,7 @@ export function useCanDepositSenior(amount?: bigint) {
     result: data as [boolean, string] | undefined,
     isLoading,
     error,
+    refetch,
   };
 }
 
@@ -119,7 +120,7 @@ export function useCanDepositSenior(amount?: bigint) {
  * Hook to check if junior deposit is allowed
  */
 export function useCanDepositJunior() {
-  const { data, isLoading, error } = useReadContract({
+  const { data, isLoading, error, refetch } = useReadContract({
     address: ADDRESSES.safetyModule,
     abi: SafetyModuleABI,
     functionName: 'canDepositJunior',
@@ -129,6 +130,7 @@ export function useCanDepositJunior() {
     result: data as [boolean, string] | undefined,
     isLoading,
     error,
+    refetch,
   };
 }
 

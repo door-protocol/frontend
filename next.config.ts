@@ -4,11 +4,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   compiler: {
-    // Remove console.log, console.info, etc. in production builds
-    // Keep console.error and console.warn
-    removeConsole: {
-      exclude: ['error', 'warn'],
-    },
+    // // Remove console.log, console.info, etc. in production builds
+    // // Keep console.error and console.warn
+    // removeConsole: {
+    //   exclude: ['error', 'warn'],
+    // },
   },
 };
 

@@ -48,25 +48,27 @@ export const PRODUCTION_ADDRESSES = {
 } as const;
 
 // -----------------------------------------------------------------------------
-// Deployment 2: Mock Tokens (For Testing)
+// Deployment 2: Mock Tokens (Mantle Sepolia Testnet)
 // Deployed: 2026-01-15
+// Network: mantleTestnet (Chain ID: 5003)
+// Status: JuniorVault ✅ initialized, CoreVault needs manual init
 // -----------------------------------------------------------------------------
 
 export const MOCK_ADDRESSES = {
   // Core Contracts
-  coreVault: '0xed70c309127aff79289e62976980efdbcbbb0899' as `0x${string}`,
-  seniorVault: '0x0e8fc3535af2df5c5a73aeff2ddc6b6d34410af8' as `0x${string}`,
-  juniorVault: '0xee3aaf06b1633837ad31d98d124cc7cc107dcb08' as `0x${string}`,
-  epochManager: '0x14f6933af60d3f9ca661630b7c3ed923821389b6' as `0x${string}`,
-  safetyModule: '0x8db86eb5f494ccddf94bbc4967288fb85947a68c' as `0x${string}`,
-  rateOracle: '0xd1812392885db8b9633e96f79302afd6ac1c944a' as `0x${string}`,
-  vaultStrategy: '0xdb367615af9a3a3ab894065d08c0a35a6171af22' as `0x${string}`,
+  coreVault: '0x8d3ed9a02d3f1e05f68a306037edaf9a54a16105' as `0x${string}`,
+  seniorVault: '0x03f4903c3fcf0cb23bee2c11531afb8a1307ce91' as `0x${string}`,
+  juniorVault: '0x694c667c3b7ba5620c68fe1cc3b308eed26afc6e' as `0x${string}`,
+  epochManager: '0xdc0f912aa970f2a89381985a8e0ea3128e754748' as `0x${string}`,
+  safetyModule: '0xab5fd152973f5430991df6c5b74a5559ffa0d189' as `0x${string}`,
+  rateOracle: '0xe76e27759b2416ec7c9ddf8ed7a58e61030876a4' as `0x${string}`,
+  vaultStrategy: '0xdd84c599f3b9a12d7f8e583539f11a3e1d9224df' as `0x${string}`,
   mockYieldStrategy:
-    '0x3627513d086cd14f1e4e69d391abcc5eb5489e23' as `0x${string}`,
+    '0x403e548ec79ade195db7e7abaa0eb203bbaa1db0' as `0x${string}`,
 
   // Mock Tokens
-  usdc: '0xbb5419001ef40a75b5edc7b10449bfe52d605762' as `0x${string}`,
-  meth: '0x9a44ca8180732d7d30f1d01514bc69450c33eae2' as `0x${string}`,
+  usdc: '0xa9fd59bf5009da2d002a474309ca38a8d8686f6a' as `0x${string}`,
+  meth: '0xac8fc1d5593ada635c5569e35534bfab1ab2fedc' as `0x${string}`,
 } as const;
 
 // -----------------------------------------------------------------------------
