@@ -2,10 +2,17 @@
   "name": "door-protocol-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "DOOR Protocol - Structured DeFi Product with Waterfall Distribution",
+  "homepage": "https://door-protocol-frontend.vercel.app",
+  "bugs": {
+    "url": "https://github.com/door-protocol/contract/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/door-protocol/frontend.git"
   },
+  "license": "MIT",
+  "author": "DOOR Protocol Team",
   "contributors": [
     "kyle-park-io <andy3638@naver.com>",
     "rrabit42 <gegiraffe@gmail.com>"
