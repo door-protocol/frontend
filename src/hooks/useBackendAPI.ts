@@ -82,9 +82,11 @@ async function fetchLatestRates(): Promise<LatestRates> {
 }
 
 async function fetchRateHistory(
-  period: '7d' | '30d' | '90d' | '1y' = '30d'
+  period: '7d' | '30d' | '90d' | '1y' = '30d',
 ): Promise<RateHistory> {
-  const res = await fetch(`${API_URL}/api/vault/rates/history?period=${period}`);
+  const res = await fetch(
+    `${API_URL}/api/vault/rates/history?period=${period}`,
+  );
   if (!res.ok) throw new Error('Failed to fetch rate history');
   return res.json();
 }

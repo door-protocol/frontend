@@ -15,17 +15,43 @@ export function useCoreVaultStats() {
     functionName: 'getStats',
   });
 
+  console.log('=== useCoreVaultStats ===');
+  console.log('CoreVault Address:', ADDRESSES.coreVault);
+  console.log('Raw Data:', data);
+  console.log('Is Loading:', isLoading);
+  console.log('Error:', error);
+
+  // Handle both array and object formats
+  type VaultStats = {
+    seniorPrincipal: bigint;
+    juniorPrincipal: bigint;
+    totalAssets: bigint;
+    currentSeniorRate: bigint;
+    juniorRatio: bigint;
+    isHealthy: boolean;
+  };
+
+  let stats: VaultStats | undefined;
+
+  if (data) {
+    if (Array.isArray(data)) {
+      // Contract returns tuple as array: [seniorPrincipal, juniorPrincipal, totalAssets, currentSeniorRate, juniorRatio, isHealthy]
+      stats = {
+        seniorPrincipal: data[0] as bigint,
+        juniorPrincipal: data[1] as bigint,
+        totalAssets: data[2] as bigint,
+        currentSeniorRate: data[3] as bigint,
+        juniorRatio: data[4] as bigint,
+        isHealthy: data[5] as boolean,
+      };
+      console.log('Converted array to object:', stats);
+    } else {
+      stats = data as unknown as VaultStats;
+    }
+  }
+
   return {
-    stats: data as
-      | {
-          seniorPrincipal: bigint;
-          juniorPrincipal: bigint;
-          totalAssets: bigint;
-          currentSeniorRate: bigint;
-          juniorRatio: bigint;
-          isHealthy: boolean;
-        }
-      | undefined,
+    stats,
     isLoading,
     error,
     refetch,

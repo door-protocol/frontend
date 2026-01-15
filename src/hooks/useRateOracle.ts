@@ -11,6 +11,12 @@ export function useDOR() {
     functionName: 'getDOR',
   });
 
+  console.log('=== useDOR ===');
+  console.log('RateOracle Address:', ADDRESSES.rateOracle);
+  console.log('DOR Raw Data:', data);
+  console.log('DOR Loading:', isLoading);
+  console.log('DOR Error:', error);
+
   return {
     dor: data as bigint | undefined,
     isLoading,
@@ -28,16 +34,45 @@ export function useAllRateSources() {
     functionName: 'getAllRateSources',
   });
 
+  console.log('=== useAllRateSources ===');
+  console.log('Sources Raw Data:', data);
+  console.log('Sources Loading:', isLoading);
+  console.log('Sources Error:', error);
+
+  // Handle both array and object formats
+  type RateSource = {
+    name: string;
+    weight: bigint;
+    rate: bigint;
+    lastUpdate: bigint;
+    isActive: boolean;
+  };
+
+  let rateSources: Array<RateSource> | undefined;
+
+  if (data && Array.isArray(data)) {
+    // Check if it's an array of tuples (arrays) or array of objects
+    if (data.length > 0 && Array.isArray(data[0])) {
+      // Contract returns array of tuples: [[name, weight, rate, lastUpdate, isActive], ...]
+      rateSources = data.map((source: any) => ({
+        name: source[0] as string,
+        weight: source[1] as bigint,
+        rate: source[2] as bigint,
+        lastUpdate: source[3] as bigint,
+        isActive: source[4] as boolean,
+      }));
+      console.log(
+        'Converted array of tuples to array of objects:',
+        rateSources,
+      );
+    } else {
+      // Already array of objects
+      rateSources = data as unknown as Array<RateSource>;
+    }
+  }
+
   return {
-    rateSources: data as
-      | Array<{
-          name: string;
-          weight: bigint;
-          rate: bigint;
-          lastUpdate: bigint;
-          isActive: boolean;
-        }>
-      | undefined,
+    rateSources,
     isLoading,
     error,
   };
@@ -52,6 +87,11 @@ export function useSeniorTargetAPY() {
     abi: RateOracleABI,
     functionName: 'getSeniorTargetAPY',
   });
+
+  console.log('=== useSeniorTargetAPY ===');
+  console.log('Target APY Raw Data:', data);
+  console.log('Target APY Loading:', isLoading);
+  console.log('Target APY Error:', error);
 
   return {
     seniorTargetAPY: data as bigint | undefined,

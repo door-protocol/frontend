@@ -30,9 +30,9 @@ export default function AnalyticsPage() {
   const { stats } = useCoreVaultStats();
   const { protocolFeeRate } = useProtocolFeeRate();
 
-  // Fetch historical data from contract events
+  // Fetch historical data from contract events (7 days for faster loading)
   const { history: rateHistory, isLoading: historyLoading } =
-    useHistoricalRates(30);
+    useHistoricalRates(7);
 
   // Calculate current metrics from contract
   const seniorAPY = stats
@@ -80,7 +80,7 @@ export default function AnalyticsPage() {
       {/* APY Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>APY Historical Trend (30 Days)</CardTitle>
+          <CardTitle>APY Historical Trend (7 Days)</CardTitle>
         </CardHeader>
         <CardContent>
           {historyLoading ? (

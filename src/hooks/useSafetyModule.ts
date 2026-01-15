@@ -27,6 +27,12 @@ export function useCurrentSafetyLevel() {
     functionName: 'getCurrentLevel',
   });
 
+  console.log('=== useCurrentSafetyLevel ===');
+  console.log('SafetyModule Address:', ADDRESSES.safetyModule);
+  console.log('Level Data:', data);
+  console.log('Loading:', isLoading);
+  console.log('Error:', error);
+
   return {
     level: data as SafetyLevel | undefined,
     isLoading,
@@ -45,8 +51,32 @@ export function useCurrentSafetyConfig() {
     functionName: 'getCurrentConfig',
   });
 
+  console.log('=== useCurrentSafetyConfig ===');
+  console.log('Config Data:', data);
+  console.log('Loading:', isLoading);
+  console.log('Error:', error);
+
+  // Handle both array and object formats
+  let config: SafetyConfig | undefined;
+
+  if (data) {
+    if (Array.isArray(data)) {
+      // Contract returns tuple as array: [minJuniorRatio, maxSeniorDeposit, seniorTargetAPY, seniorDepositsEnabled, juniorDepositsEnabled]
+      config = {
+        minJuniorRatio: data[0] as bigint,
+        maxSeniorDeposit: data[1] as bigint,
+        seniorTargetAPY: data[2] as bigint,
+        seniorDepositsEnabled: data[3] as boolean,
+        juniorDepositsEnabled: data[4] as boolean,
+      };
+      console.log('Converted array to object:', config);
+    } else {
+      config = data as unknown as SafetyConfig;
+    }
+  }
+
   return {
-    config: data as SafetyConfig | undefined,
+    config,
     isLoading,
     error,
   };
@@ -62,14 +92,36 @@ export function useHealthStatus() {
     functionName: 'getHealthStatus',
   });
 
+  console.log('=== useHealthStatus ===');
+  console.log('Health Status Data:', data);
+  console.log('Loading:', isLoading);
+  console.log('Error:', error);
+
+  // Handle both array and object formats
+  type HealthStatus = {
+    isHealthy: boolean;
+    isCritical: boolean;
+    currentRatio: bigint;
+  };
+
+  let healthStatus: HealthStatus | undefined;
+
+  if (data) {
+    if (Array.isArray(data)) {
+      // Contract returns tuple as array: [isHealthy, isCritical, currentRatio]
+      healthStatus = {
+        isHealthy: data[0] as boolean,
+        isCritical: data[1] as boolean,
+        currentRatio: data[2] as bigint,
+      };
+      console.log('Converted array to object:', healthStatus);
+    } else {
+      healthStatus = data as unknown as HealthStatus;
+    }
+  }
+
   return {
-    healthStatus: data as
-      | {
-          isHealthy: boolean;
-          isCritical: boolean;
-          currentRatio: bigint;
-        }
-      | undefined,
+    healthStatus,
     isLoading,
     error,
     refetch,
@@ -108,8 +160,11 @@ export function useCanDepositSenior(amount?: bigint) {
     },
   });
 
+  // Contract returns tuple as array: [canDeposit, reason]
+  const result = data ? (data as [boolean, string]) : undefined;
+
   return {
-    result: data as [boolean, string] | undefined,
+    result,
     isLoading,
     error,
     refetch,
@@ -126,8 +181,11 @@ export function useCanDepositJunior() {
     functionName: 'canDepositJunior',
   });
 
+  // Contract returns tuple as array: [canDeposit, reason]
+  const result = data ? (data as [boolean, string]) : undefined;
+
   return {
-    result: data as [boolean, string] | undefined,
+    result,
     isLoading,
     error,
     refetch,

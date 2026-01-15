@@ -6,3 +6,4 @@ export * from './useUSDC';
 export * from './useEpochManager';
 export * from './useSafetyModule';
 export * from './useBackendAPI';
+export * from './useDORWithFallback';

@@ -70,7 +70,6 @@ export default function PositionCard({
 
         {/* Yield */}
         <div className="flex items-center justify-between p-4 bg-linear-to-br from-green-50 dark:from-green-950/30 to-green-100/50 dark:to-green-900/20 rounded-xl border-2 border-green-200 dark:border-green-900/50 shadow-lg">
-          d{' '}
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1">
               Claimable Yield

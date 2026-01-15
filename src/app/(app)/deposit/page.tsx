@@ -151,7 +151,8 @@ export default function DepositPage() {
 
   useEffect(() => {
     if (isConfirmingDepositSenior || isConfirmingDepositJunior) {
-      const hash = selectedTranche === 'senior' ? depositHashSenior : depositHashJunior;
+      const hash =
+        selectedTranche === 'senior' ? depositHashSenior : depositHashJunior;
       console.log('⏳ Transaction Confirming:', {
         tranche: selectedTranche,
         isConfirmingDepositSenior,
@@ -244,7 +245,8 @@ export default function DepositPage() {
 
   // Handle Deposit Success/Error
   useEffect(() => {
-    const hash = selectedTranche === 'senior' ? depositHashSenior : depositHashJunior;
+    const hash =
+      selectedTranche === 'senior' ? depositHashSenior : depositHashJunior;
     console.log('Deposit Success State:', {
       isSeniorSuccess,
       isJuniorSuccess,
@@ -252,8 +254,12 @@ export default function DepositPage() {
       hash,
     });
     if (isSeniorSuccess || isJuniorSuccess) {
-      const explorerUrl = hash ? `https://sepolia.mantlescan.xyz/tx/${hash}` : null;
-      toast.success(`Deposit Successful! ${explorerUrl ? 'View transaction →' : ''}`);
+      const explorerUrl = hash
+        ? `https://sepolia.mantlescan.xyz/tx/${hash}`
+        : null;
+      toast.success(
+        `Deposit Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+      );
       console.log('✅ Deposit successful!', explorerUrl);
       // Reset amount after successful deposit
       setAmount('');
@@ -283,8 +289,12 @@ export default function DepositPage() {
       const errorMessage = error?.message || 'Unknown error';
       let userMessage = errorMessage;
 
-      if (errorMessage.includes('NotInitialized') || errorMessage.includes('execution reverted')) {
-        userMessage = 'Vault not initialized. Please contact the protocol administrator.';
+      if (
+        errorMessage.includes('NotInitialized') ||
+        errorMessage.includes('execution reverted')
+      ) {
+        userMessage =
+          'Vault not initialized. Please contact the protocol administrator.';
       }
 
       toast.error(`Deposit Failed: ${userMessage}`);
@@ -394,10 +404,9 @@ export default function DepositPage() {
                     ⚠️ Vault Not Initialized
                   </p>
                   <p className="text-sm text-muted-foreground mb-2">
-                    The{' '}
-                    {selectedTranche === 'senior' ? 'Senior' : 'Junior'} vault
-                    has not been initialized yet. Deposits will fail until the
-                    vault is properly set up by the protocol administrator.
+                    The {selectedTranche === 'senior' ? 'Senior' : 'Junior'}{' '}
+                    vault has not been initialized yet. Deposits will fail until
+                    the vault is properly set up by the protocol administrator.
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Vault Address:{' '}
@@ -449,11 +458,13 @@ export default function DepositPage() {
                       ⚠️ Insufficient Junior Capital
                     </p>
                     <p className="text-sm text-muted-foreground mb-3">
-                      The protocol requires at least 20% Junior tranche to protect Senior depositors.
-                      Currently, there isn't enough Junior capital to accept your Senior deposit.
+                      The protocol requires at least 20% Junior tranche to
+                      protect Senior depositors. Currently, there isn't enough
+                      Junior capital to accept your Senior deposit.
                     </p>
                     <p className="text-sm font-semibold text-red-900 dark:text-red-300">
-                      💡 Solution: Deposit to Junior tranche first, then you can deposit to Senior.
+                      💡 Solution: Deposit to Junior tranche first, then you can
+                      deposit to Senior.
                     </p>
                   </div>
 
@@ -519,7 +530,11 @@ export default function DepositPage() {
                       {safetyConfig && (
                         <>
                           <p>
-                            Min Junior Ratio: {(Number(safetyConfig.minJuniorRatio) / 100).toFixed(1)}%
+                            Min Junior Ratio:{' '}
+                            {(
+                              Number(safetyConfig.minJuniorRatio) / 100
+                            ).toFixed(1)}
+                            %
                           </p>
                           <p>
                             Senior Deposits Enabled:{' '}

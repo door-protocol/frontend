@@ -11,7 +11,7 @@ import {
   useEpoch,
   useCurrentEpochState,
 } from '@/hooks/useEpochManager';
-import { useLatestRates } from '@/hooks/useBackendAPI';
+import { useDORWithFallback } from '@/hooks/useDORWithFallback';
 import { formatUnits } from 'viem';
 import {
   estimateJuniorAPY,
@@ -27,9 +27,17 @@ export default function DashboardPage() {
   const { state: epochState } = useCurrentEpochState();
   const { epoch: currentEpoch } = useEpoch(currentEpochId);
 
+  // Logging contract data
+  console.log('=== Dashboard Contract Data ===');
+  console.log('VaultStats:', vaultStats);
+  console.log('CurrentEpochId:', currentEpochId);
+  console.log('EpochState:', epochState);
+  console.log('CurrentEpoch:', currentEpoch);
+
   // Calculate stats from contract data
   const stats = vaultStats
     ? (() => {
+        console.log('=== Calculating Stats from VaultStats ===');
         const seniorAPY = Number(vaultStats.currentSeniorRate) / 100;
         const estimatedJuniorAPY = estimateJuniorAPY(
           vaultStats.seniorPrincipal,
@@ -40,7 +48,7 @@ export default function DashboardPage() {
         const juniorAPY =
           estimatedJuniorAPY !== null ? estimatedJuniorAPY / 100 : 0;
 
-        return {
+        const calculatedStats = {
           tvl: formatUnits(vaultStats.totalAssets, 6),
           seniorTVL: formatUnits(vaultStats.seniorPrincipal, 6),
           juniorTVL: formatUnits(vaultStats.juniorPrincipal, 6),
@@ -48,6 +56,9 @@ export default function DashboardPage() {
           juniorAPY: juniorAPY.toFixed(1),
           juniorRatio: Number(vaultStats.juniorRatio) / 100,
         };
+
+        console.log('Calculated Stats:', calculatedStats);
+        return calculatedStats;
       })()
     : {
         tvl: '0',
@@ -58,30 +69,14 @@ export default function DashboardPage() {
         juniorRatio: 0,
       };
 
-  // Fetch DOR data from backend API
-  const { data: ratesData, isLoading: ratesLoading } = useLatestRates();
+  // Fetch DOR data with fallback chain: Contract -> Backend API -> Hardcoded
+  const { dor, isLoading: ratesLoading } = useDORWithFallback();
 
-  const dor = ratesData
-    ? {
-        currentRate: ratesData.dor,
-        seniorTarget: ratesData.seniorTarget,
-        sources: ratesData.sources.map((s) => ({
-          name: s.name,
-          rate: s.rate,
-          isLive: s.isLive,
-        })),
-        liveCount: ratesData.liveCount,
-        fallbackCount: ratesData.fallbackCount,
-        source: ratesData.source,
-      }
-    : {
-        currentRate: 0,
-        seniorTarget: 0,
-        sources: [],
-        liveCount: 0,
-        fallbackCount: 0,
-        source: 'loading' as const,
-      };
+  // Logging DOR data
+  console.log('DOR Data:', dor);
+  console.log('DOR Source:', dor.source);
+  console.log('DOR Loading:', ratesLoading);
+  console.log('===============================');
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
@@ -274,12 +269,24 @@ export default function DashboardPage() {
           <CardTitle className="text-foreground flex items-center justify-between">
             <span>DOR Benchmark Rate</span>
             {dor.source && (
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                dor.source === 'database' 
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                  : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-              }`}>
-                {dor.source === 'database' ? '🔴 Live' : '📊 Mock Data'}
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${
+                  dor.source === 'contract'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : dor.source === 'backend'
+                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      : dor.source === 'hardcoded'
+                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                        : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400'
+                }`}
+              >
+                {dor.source === 'contract'
+                  ? '🔗 On-Chain'
+                  : dor.source === 'backend'
+                    ? '🌐 Backend API'
+                    : dor.source === 'hardcoded'
+                      ? '📊 Fallback'
+                      : '⏳ Loading'}
               </span>
             )}
           </CardTitle>
@@ -293,14 +300,17 @@ export default function DashboardPage() {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Senior Target (DOR + 1%)</span>
+              <span className="text-sm text-muted-foreground">
+                Senior Target (DOR + 1%)
+              </span>
               <span className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                 {ratesLoading ? '...' : `${dor.seniorTarget}%`}
               </span>
             </div>
             <div className="border-t border-border pt-3 space-y-2 text-sm">
               <div className="text-xs text-muted-foreground mb-2">
-                Rate Sources ({dor.liveCount} live, {dor.fallbackCount} fallback)
+                Rate Sources ({dor.liveCount} live, {dor.fallbackCount}{' '}
+                fallback)
               </div>
               {dor.sources.map((source) => (
                 <div
@@ -308,7 +318,9 @@ export default function DashboardPage() {
                   className="flex items-center justify-between text-muted-foreground"
                 >
                   <span className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${source.isLive ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${source.isLive ? 'bg-green-500' : 'bg-yellow-500'}`}
+                    />
                     {source.name}
                   </span>
                   <span>{source.rate}%</span>

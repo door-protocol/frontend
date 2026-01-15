@@ -77,6 +77,12 @@ export default function SafetyPage() {
     }
   };
 
+  console.log('=== Safety Page Data ===');
+  console.log('healthStatus:', healthStatus);
+  console.log('stats:', stats);
+  console.log('config:', config);
+  console.log('level:', level);
+
   const currentRatio = healthStatus
     ? Number(healthStatus.currentRatio) / 100
     : stats
@@ -88,6 +94,11 @@ export default function SafetyPage() {
   const targetAPY = config
     ? Number(config.seniorTargetAPY) / 100
     : DEFAULT_TARGET_APY;
+
+  console.log('Calculated currentRatio:', currentRatio);
+  console.log('Calculated minRatio:', minRatio);
+  console.log('Calculated targetAPY:', targetAPY);
+  console.log('===========================');
 
   const color = getLevelColor(currentLevel);
 
