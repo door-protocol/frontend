@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
       exclude: ['error', 'warn'],
     },
   },
+  // Turbopack configuration for Next.js 16+
+  turbopack: {},
+  // Exclude external and keeper-bot folders from webpack watch (fallback for webpack mode)
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/external/**', '**/keeper-bot/**', '**/node_modules/**'],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

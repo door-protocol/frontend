@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import TrancheSelector, {
   TrancheType,
@@ -26,6 +26,7 @@ import { useUSDCBalance } from '@/hooks/useUSDC';
 import { useMintMockUSDC } from '@/hooks/useMockUSDC';
 import { useToast } from '@/hooks/useToast';
 import { ToastContainer } from '@/components/ui/toast-container';
+import { Spinner } from '@/components/ui/spinner';
 import {
   useSeniorTargetAPY,
   useCanDepositSenior,
@@ -43,6 +44,14 @@ export default function DepositPage() {
   const [amount, setAmount] = useState('');
   const { toast } = useToast();
 
+  // Track shown toasts to prevent duplicates
+  const shownToastsRef = useRef<Set<string>>(new Set());
+
+  // Reset amount when tranche changes
+  useEffect(() => {
+    setAmount('');
+  }, [selectedTranche]);
+
   // Fetch USDC balance and allowances
   const { balance: usdcBalance, refetch: refetchBalance } = useUSDCBalance();
   const balance = usdcBalance ? Number(formatUnits(usdcBalance, 6)) : 0;
@@ -59,6 +68,7 @@ export default function DepositPage() {
     isConfirming: isConfirmingMint,
     isSuccess: isMintSuccess,
     error: mintError,
+    hash: mintHash,
   } = useMintMockUSDC();
   const isMockDeployment =
     typeof window !== 'undefined' &&
@@ -210,28 +220,61 @@ export default function DepositPage() {
     mintAmount(address, 10000);
   };
 
-  // Handle Approve Success/Error
+  // Handle Approve Success/Error - Senior
   useEffect(() => {
-    if (isApproveSuccessSenior || isApproveSuccessJunior) {
-      toast.success('USDC Approval Successful! You can now deposit.');
-      console.log('Approve successful');
-      // Refetch allowances after approval
-      if (selectedTranche === 'senior') {
+    if (
+      isApproveSuccessSenior &&
+      selectedTranche === 'senior' &&
+      approveHashSenior
+    ) {
+      const toastKey = `approve-senior-${approveHashSenior}`;
+      if (!shownToastsRef.current.has(toastKey)) {
+        shownToastsRef.current.add(toastKey);
+        const explorerUrl = `https://sepolia.mantlescan.xyz/tx/${approveHashSenior}`;
+        toast.success('USDC Approval Successful!', {
+          url: explorerUrl,
+          label: 'View transaction →',
+        });
+        console.log('✅ Senior approve successful!', explorerUrl);
         refetchSeniorAllowance();
         refetchSeniorCheck();
-      } else {
+      }
+    }
+  }, [
+    isApproveSuccessSenior,
+    approveHashSenior,
+    selectedTranche,
+    toast,
+    refetchSeniorAllowance,
+    refetchSeniorCheck,
+  ]);
+
+  // Handle Approve Success/Error - Junior
+  useEffect(() => {
+    if (
+      isApproveSuccessJunior &&
+      selectedTranche === 'junior' &&
+      approveHashJunior
+    ) {
+      const toastKey = `approve-junior-${approveHashJunior}`;
+      if (!shownToastsRef.current.has(toastKey)) {
+        shownToastsRef.current.add(toastKey);
+        const explorerUrl = `https://sepolia.mantlescan.xyz/tx/${approveHashJunior}`;
+        toast.success('USDC Approval Successful!', {
+          url: explorerUrl,
+          label: 'View transaction →',
+        });
+        console.log('✅ Junior approve successful!', explorerUrl);
         refetchJuniorAllowance();
         refetchJuniorCheck();
       }
     }
   }, [
-    isApproveSuccessSenior,
     isApproveSuccessJunior,
-    toast,
+    approveHashJunior,
     selectedTranche,
-    refetchSeniorAllowance,
+    toast,
     refetchJuniorAllowance,
-    refetchSeniorCheck,
     refetchJuniorCheck,
   ]);
 
@@ -243,37 +286,56 @@ export default function DepositPage() {
     }
   }, [approveErrorSenior, approveErrorJunior, toast]);
 
-  // Handle Deposit Success/Error
+  // Handle Deposit Success/Error - Senior
   useEffect(() => {
-    const hash =
-      selectedTranche === 'senior' ? depositHashSenior : depositHashJunior;
-    console.log('Deposit Success State:', {
-      isSeniorSuccess,
-      isJuniorSuccess,
-      selectedTranche,
-      hash,
-    });
-    if (isSeniorSuccess || isJuniorSuccess) {
-      const explorerUrl = hash
-        ? `https://sepolia.mantlescan.xyz/tx/${hash}`
-        : null;
-      toast.success(
-        `Deposit Successful! ${explorerUrl ? 'View transaction →' : ''}`,
-      );
-      console.log('✅ Deposit successful!', explorerUrl);
-      // Reset amount after successful deposit
-      setAmount('');
-      // Refetch balance
-      refetchBalance();
+    if (isSeniorSuccess && selectedTranche === 'senior' && depositHashSenior) {
+      const toastKey = `deposit-senior-${depositHashSenior}`;
+      if (!shownToastsRef.current.has(toastKey)) {
+        shownToastsRef.current.add(toastKey);
+        const explorerUrl = `https://sepolia.mantlescan.xyz/tx/${depositHashSenior}`;
+        toast.success('Deposit Successful!', {
+          url: explorerUrl,
+          label: 'View transaction →',
+        });
+        console.log('✅ Senior deposit successful!', explorerUrl);
+        // Reset amount after successful deposit
+        setAmount('');
+        // Refetch balance
+        refetchBalance();
+      }
     }
   }, [
     isSeniorSuccess,
-    isJuniorSuccess,
-    toast,
-    selectedTranche,
-    refetchBalance,
     depositHashSenior,
+    selectedTranche,
+    toast,
+    refetchBalance,
+  ]);
+
+  // Handle Deposit Success/Error - Junior
+  useEffect(() => {
+    if (isJuniorSuccess && selectedTranche === 'junior' && depositHashJunior) {
+      const toastKey = `deposit-junior-${depositHashJunior}`;
+      if (!shownToastsRef.current.has(toastKey)) {
+        shownToastsRef.current.add(toastKey);
+        const explorerUrl = `https://sepolia.mantlescan.xyz/tx/${depositHashJunior}`;
+        toast.success('Deposit Successful!', {
+          url: explorerUrl,
+          label: 'View transaction →',
+        });
+        console.log('✅ Junior deposit successful!', explorerUrl);
+        // Reset amount after successful deposit
+        setAmount('');
+        // Refetch balance
+        refetchBalance();
+      }
+    }
+  }, [
+    isJuniorSuccess,
     depositHashJunior,
+    selectedTranche,
+    toast,
+    refetchBalance,
   ]);
 
   useEffect(() => {
@@ -304,15 +366,23 @@ export default function DepositPage() {
 
   // Handle Mint Success/Error
   useEffect(() => {
-    if (isMintSuccess) {
-      toast.success('Mock USDC Minted! Refreshing balance...');
-      console.log('Mint successful');
-      // Refresh balance after successful mint
-      setTimeout(() => {
-        refetchBalance();
-      }, 2000);
+    if (isMintSuccess && mintHash) {
+      const toastKey = `mint-${mintHash}`;
+      if (!shownToastsRef.current.has(toastKey)) {
+        shownToastsRef.current.add(toastKey);
+        const explorerUrl = `https://sepolia.mantlescan.xyz/tx/${mintHash}`;
+        toast.success('Mock USDC Minted!', {
+          url: explorerUrl,
+          label: 'View transaction →',
+        });
+        console.log('✅ Mint successful!', explorerUrl);
+        // Refresh balance after successful mint
+        setTimeout(() => {
+          refetchBalance();
+        }, 2000);
+      }
     }
-  }, [isMintSuccess, refetchBalance, toast]);
+  }, [isMintSuccess, refetchBalance, toast, mintHash]);
 
   useEffect(() => {
     if (mintError) {
@@ -377,13 +447,21 @@ export default function DepositPage() {
                   className="bg-green-600 hover:bg-green-700"
                   size="lg"
                 >
-                  {isMinting
-                    ? 'Minting...'
-                    : isConfirmingMint
-                      ? 'Confirming...'
-                      : isMintSuccess
-                        ? '✅ Minted'
-                        : 'Mint 10,000 USDC'}
+                  {isMinting ? (
+                    <>
+                      <Spinner className="mr-2" />
+                      Minting...
+                    </>
+                  ) : isConfirmingMint ? (
+                    <>
+                      <Spinner className="mr-2" />
+                      Confirming...
+                    </>
+                  ) : isMintSuccess ? (
+                    '✅ Minted'
+                  ) : (
+                    'Mint 10,000 USDC'
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -431,8 +509,8 @@ export default function DepositPage() {
                   Approval Required
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Click "Approve USDC" before depositing to allow the vault to
-                  use your USDC tokens
+                  Click &quot;Approve USDC&quot; before depositing to allow the
+                  vault to use your USDC tokens
                 </p>
               </div>
             </CardContent>
@@ -459,8 +537,8 @@ export default function DepositPage() {
                     </p>
                     <p className="text-sm text-muted-foreground mb-3">
                       The protocol requires at least 20% Junior tranche to
-                      protect Senior depositors. Currently, there isn't enough
-                      Junior capital to accept your Senior deposit.
+                      protect Senior depositors. Currently, there isn&apos;t
+                      enough Junior capital to accept your Senior deposit.
                     </p>
                     <p className="text-sm font-semibold text-red-900 dark:text-red-300">
                       💡 Solution: Deposit to Junior tranche first, then you can
@@ -633,24 +711,43 @@ export default function DepositPage() {
               !amount ||
               Number(amount) <= 0 ||
               hasAllowance ||
-              isApprovingSenior ||
-              isApprovingJunior ||
-              isConfirmingApproveSenior ||
-              isConfirmingApproveJunior
+              (selectedTranche === 'senior'
+                ? isApprovingSenior || isConfirmingApproveSenior
+                : isApprovingJunior || isConfirmingApproveJunior)
             }
             className="w-full"
             size="lg"
             variant="outline"
           >
-            {hasAllowance
-              ? '✅ Already Approved'
-              : isApprovingSenior || isApprovingJunior
-                ? 'Approving...'
-                : isConfirmingApproveSenior || isConfirmingApproveJunior
-                  ? 'Confirming...'
-                  : isApproveSuccessSenior || isApproveSuccessJunior
-                    ? '✅ Approved'
-                    : 'Approve USDC'}
+            {hasAllowance ? (
+              '✅ Already Approved'
+            ) : selectedTranche === 'senior' ? (
+              isApprovingSenior ? (
+                <>
+                  <Spinner className="mr-2" />
+                  Approving...
+                </>
+              ) : isConfirmingApproveSenior ? (
+                <>
+                  <Spinner className="mr-2" />
+                  Confirming...
+                </>
+              ) : (
+                'Approve USDC'
+              )
+            ) : isApprovingJunior ? (
+              <>
+                <Spinner className="mr-2" />
+                Approving...
+              </>
+            ) : isConfirmingApproveJunior ? (
+              <>
+                <Spinner className="mr-2" />
+                Confirming...
+              </>
+            ) : (
+              'Approve USDC'
+            )}
           </Button>
 
           <Button
@@ -661,10 +758,13 @@ export default function DepositPage() {
               Number(amount) <= 0 ||
               !hasAllowance ||
               depositAllowed === false ||
-              isDepositingSenior ||
-              isDepositingJunior ||
-              isConfirmingDepositSenior ||
-              isConfirmingDepositJunior
+              (selectedTranche === 'senior'
+                ? isDepositingSenior ||
+                  isConfirmingDepositSenior ||
+                  isSeniorSuccess
+                : isDepositingJunior ||
+                  isConfirmingDepositJunior ||
+                  isJuniorSuccess)
             }
             className={`w-full text-lg py-7 shadow-2xl ${
               selectedTranche === 'senior'
@@ -673,20 +773,62 @@ export default function DepositPage() {
             }`}
             size="lg"
           >
-            {!isConnected
-              ? 'Connect Wallet to Deposit'
-              : !hasAllowance
-                ? 'Approve USDC First'
-                : isDepositingSenior || isDepositingJunior
-                  ? 'Depositing...'
-                  : isConfirmingDepositSenior || isConfirmingDepositJunior
-                    ? 'Confirming...'
-                    : isSeniorSuccess || isJuniorSuccess
-                      ? '✅ Deposit Successful!'
-                      : depositAllowed === false
-                        ? 'Deposits Not Allowed'
-                        : 'Deposit Now'}
+            {selectedTranche === 'senior' ? (
+              isSeniorSuccess ? (
+                '✅ Deposit Successful!'
+              ) : isDepositingSenior ? (
+                <>
+                  <Spinner className="mr-2" size="md" />
+                  Depositing...
+                </>
+              ) : isConfirmingDepositSenior ? (
+                <>
+                  <Spinner className="mr-2" size="md" />
+                  Confirming...
+                </>
+              ) : !isConnected ? (
+                'Connect Wallet to Deposit'
+              ) : !hasAllowance ? (
+                'Approve USDC First'
+              ) : depositAllowed === false ? (
+                'Deposits Not Allowed'
+              ) : (
+                'Deposit Now'
+              )
+            ) : isJuniorSuccess ? (
+              '✅ Deposit Successful!'
+            ) : isDepositingJunior ? (
+              <>
+                <Spinner className="mr-2" size="md" />
+                Depositing...
+              </>
+            ) : isConfirmingDepositJunior ? (
+              <>
+                <Spinner className="mr-2" size="md" />
+                Confirming...
+              </>
+            ) : !isConnected ? (
+              'Connect Wallet to Deposit'
+            ) : !hasAllowance ? (
+              'Approve USDC First'
+            ) : depositAllowed === false ? (
+              'Deposits Not Allowed'
+            ) : (
+              'Deposit Now'
+            )}
           </Button>
+
+          {/* Reset Button - Show after successful deposit */}
+          {((selectedTranche === 'senior' && isSeniorSuccess) ||
+            (selectedTranche === 'junior' && isJuniorSuccess)) && (
+            <Button
+              onClick={() => window.location.reload()}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg"
+              size="lg"
+            >
+              Make Another Deposit
+            </Button>
+          )}
         </div>
 
         {/* Info */}

@@ -156,7 +156,7 @@ export function useUserWithdrawRequests(userAddress?: `0x${string}`) {
     // Check if it's an array of tuples (arrays) or array of objects
     if (data.length > 0 && Array.isArray(data[0])) {
       // Contract returns array of tuples: [[user, isSenior, shares, epochId, processed], ...]
-      requests = data.map((req: any) => ({
+      requests = data.map((req: unknown[]) => ({
         user: req[0] as `0x${string}`,
         isSenior: req[1] as boolean,
         shares: req[2] as bigint,

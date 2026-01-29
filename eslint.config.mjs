@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    // External submodules:
+    'external/**',
+    // Keeper bot (separate project):
+    'keeper-bot/**',
   ]),
 ]);
 

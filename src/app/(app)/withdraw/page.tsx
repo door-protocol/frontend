@@ -22,6 +22,7 @@ import {
 } from '@/hooks/useEpochManager';
 import { useToast } from '@/hooks/useToast';
 import { ToastContainer } from '@/components/ui/toast-container';
+import { Spinner } from '@/components/ui/spinner';
 
 type TrancheType = 'senior' | 'junior';
 
@@ -378,13 +379,21 @@ export default function WithdrawPage() {
                   className="w-full"
                   size="lg"
                 >
-                  {isRequestPending
-                    ? 'Requesting...'
-                    : isRequestConfirming
-                      ? 'Confirming...'
-                      : isRequestSuccess
-                        ? 'Request Submitted!'
-                        : 'Request Withdrawal'}
+                  {isRequestPending ? (
+                    <>
+                      <Spinner className="mr-2" size="md" />
+                      Requesting...
+                    </>
+                  ) : isRequestConfirming ? (
+                    <>
+                      <Spinner className="mr-2" size="md" />
+                      Confirming...
+                    </>
+                  ) : isRequestSuccess ? (
+                    'Request Submitted!'
+                  ) : (
+                    'Request Withdrawal'
+                  )}
                 </Button>
               </CardContent>
             </Card>
@@ -489,13 +498,21 @@ export default function WithdrawPage() {
                   className="w-full bg-orange-600 hover:bg-orange-700"
                   size="lg"
                 >
-                  {isEarlyPending
-                    ? 'Withdrawing...'
-                    : isEarlyConfirming
-                      ? 'Confirming...'
-                      : isEarlySuccess
-                        ? 'Withdrawal Complete!'
-                        : 'Withdraw Immediately'}
+                  {isEarlyPending ? (
+                    <>
+                      <Spinner className="mr-2" size="md" />
+                      Withdrawing...
+                    </>
+                  ) : isEarlyConfirming ? (
+                    <>
+                      <Spinner className="mr-2" size="md" />
+                      Confirming...
+                    </>
+                  ) : isEarlySuccess ? (
+                    'Withdrawal Complete!'
+                  ) : (
+                    'Withdraw Immediately'
+                  )}
                 </Button>
               </CardContent>
             </Card>

@@ -169,11 +169,19 @@ npm >= 9.0.0 or yarn >= 1.22.0
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository with submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/door-protocol/frontend.git
+cd frontend
+```
+
+Or if you already cloned it:
 
 ```bash
 git clone https://github.com/door-protocol/frontend.git
 cd frontend
+git submodule update --init --recursive
 ```
 
 2. Install dependencies:
@@ -182,6 +190,30 @@ cd frontend
 npm install
 # or
 yarn install
+```
+
+### Contract ABIs
+
+The repository includes the [door-protocol/contract](https://github.com/door-protocol/contract) repository as a git submodule in `external/door-contract/`. The `abi/` folder in the root is a symbolic link to `external/door-contract/abi/` for easy access.
+
+**ABI Files Location**: `abi/` (symlink to `external/door-contract/abi/`)
+
+- `CoreVault.json`
+- `DOORRateOracle.json`
+- `EpochManager.json`
+- `JuniorVault.json`
+- `SeniorVault.json`
+- `SafetyModule.json`
+- `VaultStrategy.json`
+- `MockUSDC.json`
+- `MockMETH.json`
+
+**Update Contract ABIs**:
+
+```bash
+cd external/door-contract
+git pull origin main
+cd ../..
 ```
 
 ### Environment Setup
@@ -271,6 +303,27 @@ frontend/
 │   └── mock/                       # Mock data for development
 │       └── vaultData.ts
 │
+├── external/                        # External dependencies
+│   └── door-contract/              # Git submodule (door-protocol/contract)
+│       ├── abi/                    # Contract ABIs
+│       ├── src/                    # Solidity source code
+│       └── README.md               # Contract documentation
+│
+├── keeper-bot/                      # Automated epoch keeper bot
+│   ├── src/
+│   │   ├── index.ts                # Main bot logic
+│   │   ├── config.ts               # Configuration loader
+│   │   └── abi.ts                  # EpochManager ABI
+│   ├── .env                        # Environment variables (not in git)
+│   ├── .env.example                # Environment template
+│   ├── package.json                # Keeper bot dependencies
+│   └── README.md                   # Keeper bot documentation
+│
+├── .github/
+│   └── workflows/
+│       └── keeper-bot.yml          # GitHub Actions workflow (runs every 5 min)
+│
+├── abi/                            # Symlink → external/door-contract/abi/
 ├── public/                          # Static assets
 └── package.json
 ```
@@ -324,6 +377,50 @@ frontend/
 - Junior capital ratio history
 - Protocol statistics
 - Export data functionality
+
+## 🤖 Keeper Bot Automation
+
+The protocol includes an automated keeper bot that manages epoch processing via GitHub Actions.
+
+### What It Does
+
+- **Automatic Epoch Processing**: Runs every 5 minutes to check if the current epoch has ended
+- **Smart Execution**: Only processes epochs when needed (after `endTime` has passed)
+- **Zero Infrastructure Cost**: Runs on GitHub Actions free tier (2000 minutes/month)
+- **Secure**: Private keys stored in GitHub Secrets (encrypted)
+
+### How It Works
+
+```
+Every 5 minutes:
+  1. Check current epoch status
+  2. If epoch ended → Call processEpoch()
+     - Harvest yield from CoreVault
+     - Process withdrawal requests
+     - Distribute penalties
+     - Start new epoch
+  3. If still active → Wait for next check
+```
+
+### Quick Setup
+
+1. **Add Private Key to GitHub Secrets**
+   - Go to Repository Settings → Secrets → Actions
+   - Add `KEEPER_PRIVATE_KEY` with your keeper wallet's private key
+
+2. **Enable GitHub Actions**
+   - Settings → Actions → General
+   - Allow all actions and reusable workflows
+
+3. **Done!** The bot runs automatically every 5 minutes
+
+For detailed setup instructions, see [`keeper-bot/README.md`](keeper-bot/README.md)
+
+### Monitoring
+
+- View execution logs in the **Actions** tab on GitHub
+- Check transaction history on [Mantle Sepolia Explorer](https://explorer.sepolia.mantle.xyz/address/0xdc0f912aa970f2a89381985a8e0ea3128e754748)
+- Monitor epoch status on the [Dashboard](https://door-protocol-frontend.vercel.app/dashboard)
 
 ## 🎯 Key Development Features
 

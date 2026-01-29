@@ -8,6 +8,7 @@ import { formatNumber } from '@/lib/utils';
 import { TrendingUp, Calendar } from 'lucide-react';
 import { useEarlyWithdraw, useRequestWithdraw } from '@/hooks/useEpochManager';
 import { useToast } from '@/hooks/useToast';
+import { Spinner } from '@/components/ui/spinner';
 
 interface PositionCardProps {
   tranche: 'senior' | 'junior';
@@ -73,7 +74,13 @@ export default function PositionCard({
         ? `https://sepolia.mantlescan.xyz/tx/${earlyWithdrawHash}`
         : null;
       toast.success(
-        `Early Withdrawal Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+        'Early Withdrawal Successful!',
+        explorerUrl
+          ? {
+              url: explorerUrl,
+              label: 'View transaction →',
+            }
+          : undefined,
       );
       console.log('✅ Early withdraw successful!', explorerUrl);
     }
@@ -94,7 +101,13 @@ export default function PositionCard({
         ? `https://sepolia.mantlescan.xyz/tx/${requestHash}`
         : null;
       toast.success(
-        `Withdrawal Request Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+        'Withdrawal Request Successful!',
+        explorerUrl
+          ? {
+              url: explorerUrl,
+              label: 'View transaction →',
+            }
+          : undefined,
       );
       console.log('✅ Request withdraw successful!', explorerUrl);
     }
@@ -214,9 +227,14 @@ export default function PositionCard({
               isEarlyWithdrawConfirming
             }
           >
-            {isEarlyWithdrawPending || isEarlyWithdrawConfirming
-              ? 'Processing...'
-              : 'Early Withdraw'}
+            {isEarlyWithdrawPending || isEarlyWithdrawConfirming ? (
+              <>
+                <Spinner className="mr-2" />
+                Processing...
+              </>
+            ) : (
+              'Early Withdraw'
+            )}
           </Button>
           <Button
             variant="default"
@@ -229,9 +247,14 @@ export default function PositionCard({
               isRequestConfirming
             }
           >
-            {isRequestPending || isRequestConfirming
-              ? 'Processing...'
-              : 'Request Withdraw'}
+            {isRequestPending || isRequestConfirming ? (
+              <>
+                <Spinner className="mr-2" />
+                Processing...
+              </>
+            ) : (
+              'Request Withdraw'
+            )}
           </Button>
         </div>
       </CardContent>
