@@ -1,0 +1,44 @@
+name: DOOR Protocol Keeper Bot
+
+on:
+  # Run every 5 minutes
+  schedule:
+    - cron: '*/5 * * * *'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  process-epoch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: 'keeper-bot/yarn.lock'
+
+      - name: Install dependencies
+        working-directory: keeper-bot
+        run: yarn install --frozen-lockfile
+
+      - name: Run Keeper Bot
+        working-directory: keeper-bot
+        env:
+          KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          EPOCH_MANAGER_ADDRESS: ${{ secrets.EPOCH_MANAGER_ADDRESS }}
+          DRY_RUN: ${{ secrets.DRY_RUN }}
+        run: yarn start
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::warning::Keeper bot failed to process epoch"

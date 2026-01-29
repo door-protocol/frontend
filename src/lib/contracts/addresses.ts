@@ -39,8 +39,6 @@ export const PRODUCTION_ADDRESSES = {
   safetyModule: '0xA08fF559C4Fc41FEf01D26744394dD2d2aa74E55' as `0x${string}`,
   rateOracle: '0x8888F236f9ec2B3aD0c07080ba5Ebc1241F70d71' as `0x${string}`,
   vaultStrategy: '0x92273a6629A87094E4A2525a7AcDE00eD3f025D3' as `0x${string}`,
-  mockYieldStrategy:
-    '0x0C3701a4d3F95af12Ed830caD9082aF896D92De9' as `0x${string}`,
 
   // Real Tokens
   usdc: '0x9a54bad93a00bf1232d4e636f5e53055dc0b8238' as `0x${string}`,
@@ -51,24 +49,23 @@ export const PRODUCTION_ADDRESSES = {
 // Deployment 2: Mock Tokens (Mantle Sepolia Testnet)
 // Deployed: 2026-01-15
 // Network: mantleTestnet (Chain ID: 5003)
-// Status: JuniorVault ✅ initialized, CoreVault needs manual init
 // -----------------------------------------------------------------------------
 
 export const MOCK_ADDRESSES = {
   // Core Contracts
-  coreVault: '0x8d3ed9a02d3f1e05f68a306037edaf9a54a16105' as `0x${string}`,
-  seniorVault: '0x03f4903c3fcf0cb23bee2c11531afb8a1307ce91' as `0x${string}`,
-  juniorVault: '0x694c667c3b7ba5620c68fe1cc3b308eed26afc6e' as `0x${string}`,
-  epochManager: '0xdc0f912aa970f2a89381985a8e0ea3128e754748' as `0x${string}`,
-  safetyModule: '0xab5fd152973f5430991df6c5b74a5559ffa0d189' as `0x${string}`,
-  rateOracle: '0xe76e27759b2416ec7c9ddf8ed7a58e61030876a4' as `0x${string}`,
-  vaultStrategy: '0xdd84c599f3b9a12d7f8e583539f11a3e1d9224df' as `0x${string}`,
-  mockYieldStrategy:
-    '0x403e548ec79ade195db7e7abaa0eb203bbaa1db0' as `0x${string}`,
+  coreVault: '0x6D418348BFfB4196D477DBe2b1082485F5aE5164' as `0x${string}`,
+  seniorVault: '0x766624E3E59a80Da9801e9b71994cb927eB7F260' as `0x${string}`,
+  juniorVault: '0x8d1fBEa28CC47959bd94ece489cb1823BeB55075' as `0x${string}`,
+  epochManager: '0x7cbdd2d816C4d733b36ED131695Ac9cb17684DC3' as `0x${string}`,
+  safetyModule: '0xE2fa3596C8969bbd28b3dda515BABb268343df4B' as `0x${string}`,
+  rateOracle: '0x738c765fB734b774EBbABc9eDb5f099c46542Ee4' as `0x${string}`,
+  vaultStrategy: '0xf9579CE4D63174b1f0f5bCB9d42255BDd07a6374' as `0x${string}`,
+  mockVaultStrategy:
+    '0x6dc9D97D7d17B01Eb8D6669a6feF05cc3D3b70d6' as `0x${string}`,
 
   // Mock Tokens
-  usdc: '0xa9fd59bf5009da2d002a474309ca38a8d8686f6a' as `0x${string}`,
-  meth: '0xac8fc1d5593ada635c5569e35534bfab1ab2fedc' as `0x${string}`,
+  usdc: '0xbadbbDb50f5F0455Bf6E4Dd6d4B5ee664D07c109' as `0x${string}`,
+  meth: '0x374962241A369F1696EF88C10beFe4f40C646592' as `0x${string}`,
 } as const;
 
 // -----------------------------------------------------------------------------

@@ -42,6 +42,14 @@ export default function PortfolioPage() {
   const totalValue =
     seniorBalanceNum + juniorBalanceNum + seniorYieldNum + juniorYieldNum;
 
+  console.log('[Portfolio Debug]', {
+    seniorYield: seniorYield?.toString(),
+    juniorYield: juniorYield?.toString(),
+    seniorYieldNum,
+    juniorYieldNum,
+    totalValue,
+  });
+
   const hasSeniorPosition = seniorBalanceNum > 0;
   const hasJuniorPosition = juniorBalanceNum > 0;
 

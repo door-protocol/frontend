@@ -54,7 +54,7 @@ export function useAllRateSources() {
     // Check if it's an array of tuples (arrays) or array of objects
     if (data.length > 0 && Array.isArray(data[0])) {
       // Contract returns array of tuples: [[name, weight, rate, lastUpdate, isActive], ...]
-      rateSources = data.map((source: any) => ({
+      rateSources = data.map((source: unknown[]) => ({
         name: source[0] as string,
         weight: source[1] as bigint,
         rate: source[2] as bigint,

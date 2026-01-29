@@ -6,6 +6,10 @@ export interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  link?: {
+    url: string;
+    label: string;
+  };
 }
 
 let toastCounter = 0;
@@ -16,9 +20,13 @@ function notifyListeners() {
   listeners.forEach((listener) => listener(toasts));
 }
 
-export function addToast(message: string, type: ToastType = 'info') {
+export function addToast(
+  message: string,
+  type: ToastType = 'info',
+  link?: { url: string; label: string },
+) {
   const id = `toast-${++toastCounter}`;
-  toasts = [...toasts, { id, message, type }];
+  toasts = [...toasts, { id, message, type, link }];
   notifyListeners();
 
   // Auto remove after 5 seconds
@@ -45,10 +53,14 @@ export function useToast() {
   }, []);
 
   const toast = {
-    success: (message: string) => addToast(message, 'success'),
-    error: (message: string) => addToast(message, 'error'),
-    info: (message: string) => addToast(message, 'info'),
-    warning: (message: string) => addToast(message, 'warning'),
+    success: (message: string, link?: { url: string; label: string }) =>
+      addToast(message, 'success', link),
+    error: (message: string, link?: { url: string; label: string }) =>
+      addToast(message, 'error', link),
+    info: (message: string, link?: { url: string; label: string }) =>
+      addToast(message, 'info', link),
+    warning: (message: string, link?: { url: string; label: string }) =>
+      addToast(message, 'warning', link),
   };
 
   return { toast, subscribe, toasts };

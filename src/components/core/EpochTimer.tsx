@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Clock } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export enum EpochState {
   OPEN = 0,
@@ -24,12 +26,12 @@ export default function EpochTimer({
   const [timeLeft, setTimeLeft] = useState('');
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const updateTimer = () => {
       const now = Math.floor(Date.now() / 1000);
       const diff = endTime - now;
 
       if (diff <= 0) {
-        setTimeLeft('Ended');
+        setTimeLeft('Epoch Ended - Awaiting Settlement');
         return;
       }
 
@@ -38,7 +40,12 @@ export default function EpochTimer({
       const minutes = Math.floor((diff % 3600) / 60);
 
       setTimeLeft(`${days}d ${hours}h ${minutes}m`);
-    }, 1000);
+    };
+
+    // Initial update
+    updateTimer();
+
+    const interval = setInterval(updateTimer, 1000);
 
     return () => clearInterval(interval);
   }, [endTime]);
@@ -58,8 +65,16 @@ export default function EpochTimer({
       'bg-blue-100 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400',
   };
 
+  const isEnded = timeLeft.includes('Ended');
+
   return (
-    <Card className="border-2 hover:shadow-xl transition-all">
+    <Card
+      className={`border-2 hover:shadow-xl transition-all ${
+        isEnded
+          ? 'border-orange-200 dark:border-orange-900 bg-orange-50/50 dark:bg-orange-950/20'
+          : ''
+      }`}
+    >
       <CardContent className="p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -70,15 +85,36 @@ export default function EpochTimer({
               <p className="text-sm font-medium text-muted-foreground mb-1">
                 Epoch #{currentEpoch}
               </p>
-              <p className="text-2xl font-bold">{timeLeft}</p>
+              <p
+                className={`text-2xl font-bold ${
+                  isEnded ? 'text-orange-600 dark:text-orange-400' : ''
+                }`}
+              >
+                {timeLeft}
+              </p>
+              {isEnded && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  New epoch will start after settlement
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span
-              className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${stateColors[epochState]}`}
-            >
-              {stateLabels[epochState]}
-            </span>
+            {epochState === EpochState.OPEN ? (
+              <Link href="/deposit">
+                <Button
+                  className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${stateColors[epochState]} hover:opacity-80 transition-opacity`}
+                >
+                  {stateLabels[epochState]} →
+                </Button>
+              </Link>
+            ) : (
+              <span
+                className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg ${stateColors[epochState]}`}
+              >
+                {stateLabels[epochState]}
+              </span>
+            )}
           </div>
         </div>
       </CardContent>

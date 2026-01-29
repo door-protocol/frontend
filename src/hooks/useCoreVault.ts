@@ -127,6 +127,44 @@ export function useProtocolFeeRate() {
 }
 
 /**
+ * Hook to read last harvest time
+ */
+export function useLastHarvestTime() {
+  const { data, isLoading, error } = useReadContract({
+    address: ADDRESSES.coreVault,
+    abi: CoreVaultABI,
+    functionName: 'lastHarvestTime',
+  });
+
+  return {
+    lastHarvestTime: data as bigint | undefined,
+    isLoading,
+    error,
+  };
+}
+
+/**
+ * Hook to calculate expected senior yield
+ */
+export function useExpectedSeniorYield(timeElapsed?: bigint) {
+  const { data, isLoading, error } = useReadContract({
+    address: ADDRESSES.coreVault,
+    abi: CoreVaultABI,
+    functionName: 'expectedSeniorYield',
+    args: timeElapsed !== undefined ? [timeElapsed] : undefined,
+    query: {
+      enabled: timeElapsed !== undefined && timeElapsed > BigInt(0),
+    },
+  });
+
+  return {
+    expectedYield: data as bigint | undefined,
+    isLoading,
+    error,
+  };
+}
+
+/**
  * Hook to harvest yield (requires KEEPER_ROLE)
  */
 export function useHarvest() {

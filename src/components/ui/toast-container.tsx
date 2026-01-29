@@ -44,17 +44,29 @@ export function ToastContainer() {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md">
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-md w-full px-4 sm:px-0 sm:w-auto">
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`flex items-center gap-3 p-4 rounded-lg border-2 shadow-lg animate-fade-in ${getStyles(toast.type)}`}
+          className={`flex items-start gap-3 p-4 rounded-lg border-2 shadow-lg animate-fade-in ${getStyles(toast.type)}`}
         >
-          {getIcon(toast.type)}
-          <p className="flex-1 text-sm font-medium">{toast.message}</p>
+          <div className="mt-0.5 flex-shrink-0">{getIcon(toast.type)}</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium break-words">{toast.message}</p>
+            {toast.link && (
+              <a
+                href={toast.link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block break-all"
+              >
+                {toast.link.label}
+              </a>
+            )}
+          </div>
           <button
             onClick={() => removeToast(toast.id)}
-            className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors"
+            className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded transition-colors flex-shrink-0"
           >
             <X className="h-4 w-4" />
           </button>

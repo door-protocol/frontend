@@ -156,7 +156,7 @@ export function useUserWithdrawRequests(userAddress?: `0x${string}`) {
     // Check if it's an array of tuples (arrays) or array of objects
     if (data.length > 0 && Array.isArray(data[0])) {
       // Contract returns array of tuples: [[user, isSenior, shares, epochId, processed], ...]
-      requests = data.map((req: any) => ({
+      requests = data.map((req: unknown[]) => ({
         user: req[0] as `0x${string}`,
         isSenior: req[1] as boolean,
         shares: req[2] as bigint,
@@ -221,7 +221,11 @@ export function useEarlyWithdrawPenaltyRate() {
 export function useRequestWithdraw() {
   const { data: hash, writeContract, isPending, error } = useWriteContract();
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const {
+    data: receipt,
+    isLoading: isConfirming,
+    isSuccess,
+  } = useWaitForTransactionReceipt({
     hash,
   });
 
@@ -234,12 +238,16 @@ export function useRequestWithdraw() {
     });
   };
 
+  // Check if transaction was reverted
+  const isReverted = receipt?.status === 'reverted';
+
   return {
     requestWithdraw,
     hash,
     isPending,
     isConfirming,
-    isSuccess,
+    isSuccess: isSuccess && !isReverted,
+    isReverted,
     error,
   };
 }
@@ -250,7 +258,11 @@ export function useRequestWithdraw() {
 export function useEarlyWithdraw() {
   const { data: hash, writeContract, isPending, error } = useWriteContract();
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const {
+    data: receipt,
+    isLoading: isConfirming,
+    isSuccess,
+  } = useWaitForTransactionReceipt({
     hash,
   });
 
@@ -263,12 +275,16 @@ export function useEarlyWithdraw() {
     });
   };
 
+  // Check if transaction was reverted
+  const isReverted = receipt?.status === 'reverted';
+
   return {
     earlyWithdraw,
     hash,
     isPending,
     isConfirming,
-    isSuccess,
+    isSuccess: isSuccess && !isReverted,
+    isReverted,
     error,
   };
 }

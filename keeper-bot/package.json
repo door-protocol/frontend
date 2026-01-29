@@ -1,0 +1,47 @@
+{
+  "name": "door-keeper-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Automated keeper bot for DOOR Protocol epoch management",
+  "keywords": [
+    "door-protocol",
+    "keeper",
+    "automation",
+    "epoch",
+    "mantle"
+  ],
+  "homepage": "https://door-protocol-frontend.vercel.app",
+  "bugs": {
+    "url": "https://github.com/door-protocol/contract/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/door-protocol/frontend.git",
+    "directory": "keeper-bot"
+  },
+  "license": "MIT",
+  "author": "DOOR Protocol Team",
+  "contributors": [
+    "kyle-park-io <andy3638@naver.com>",
+    "rrabit42 <gegiraffe@gmail.com>"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "grant-role": "tsx grant-keeper-role.ts",
+    "sort-package-json": "sort-package-json package.json",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "viem": "^2.21.54"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "sort-package-json": "^3.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.3"
+  }
+}

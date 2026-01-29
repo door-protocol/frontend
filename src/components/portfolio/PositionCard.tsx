@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -8,6 +9,7 @@ import { formatNumber } from '@/lib/utils';
 import { TrendingUp, Calendar } from 'lucide-react';
 import { useEarlyWithdraw, useRequestWithdraw } from '@/hooks/useEpochManager';
 import { useToast } from '@/hooks/useToast';
+import { Spinner } from '@/components/ui/spinner';
 
 interface PositionCardProps {
   tranche: 'senior' | 'junior';
@@ -31,6 +33,7 @@ export default function PositionCard({
   const isSenior = tranche === 'senior';
   const totalValue = Number(balance) + Number(claimableYield);
   const { toast } = useToast();
+  const router = useRouter();
 
   // Calculate progress (mock: based on epoch difference)
   const epochProgress = ((currentEpoch - depositEpoch) / 12) * 100; // Assuming 12 epochs = 1 period
@@ -73,7 +76,13 @@ export default function PositionCard({
         ? `https://sepolia.mantlescan.xyz/tx/${earlyWithdrawHash}`
         : null;
       toast.success(
-        `Early Withdrawal Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+        'Early Withdrawal Successful!',
+        explorerUrl
+          ? {
+              url: explorerUrl,
+              label: 'View transaction →',
+            }
+          : undefined,
       );
       console.log('✅ Early withdraw successful!', explorerUrl);
     }
@@ -94,7 +103,13 @@ export default function PositionCard({
         ? `https://sepolia.mantlescan.xyz/tx/${requestHash}`
         : null;
       toast.success(
-        `Withdrawal Request Successful! ${explorerUrl ? 'View transaction →' : ''}`,
+        'Withdrawal Request Successful!',
+        explorerUrl
+          ? {
+              url: explorerUrl,
+              label: 'View transaction →',
+            }
+          : undefined,
       );
       console.log('✅ Request withdraw successful!', explorerUrl);
     }
@@ -204,34 +219,29 @@ export default function PositionCard({
         {/* Actions */}
         <div className="grid grid-cols-2 gap-2 pt-2">
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
-            onClick={handleEarlyWithdraw}
-            disabled={
-              !shares ||
-              shares === BigInt(0) ||
-              isEarlyWithdrawPending ||
-              isEarlyWithdrawConfirming
+            onClick={() =>
+              router.push(
+                `/withdraw?tranche=${tranche}&type=queue&amount=${balance}`,
+              )
             }
+            disabled={!shares || shares === BigInt(0)}
           >
-            {isEarlyWithdrawPending || isEarlyWithdrawConfirming
-              ? 'Processing...'
-              : 'Early Withdraw'}
+            Queue Withdraw
           </Button>
           <Button
             variant="default"
             size="sm"
-            onClick={handleRequestWithdraw}
-            disabled={
-              !shares ||
-              shares === BigInt(0) ||
-              isRequestPending ||
-              isRequestConfirming
+            onClick={() =>
+              router.push(
+                `/withdraw?tranche=${tranche}&type=immediate&amount=${balance}`,
+              )
             }
+            disabled={!shares || shares === BigInt(0)}
+            className="bg-orange-600 hover:bg-orange-700"
           >
-            {isRequestPending || isRequestConfirming
-              ? 'Processing...'
-              : 'Request Withdraw'}
+            Immediate Withdraw
           </Button>
         </div>
       </CardContent>

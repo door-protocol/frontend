@@ -121,7 +121,7 @@ export default async function OGImage() {
               marginRight: '40px',
             }}
           >
-            Senior APY: 5.5%
+            Senior APY: 6.0%
           </div>
           <div
             style={{

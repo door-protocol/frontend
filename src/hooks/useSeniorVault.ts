@@ -49,6 +49,23 @@ export function useSeniorVaultBalance() {
 }
 
 /**
+ * Hook to read total supply of Senior vault shares
+ */
+export function useSeniorVaultTotalSupply() {
+  const { data, isLoading, error } = useReadContract({
+    address: ADDRESSES.seniorVault,
+    abi: SeniorVaultABI,
+    functionName: 'totalSupply',
+  });
+
+  return {
+    totalSupply: data as bigint | undefined,
+    isLoading,
+    error,
+  };
+}
+
+/**
  * Hook to read total assets in Senior vault
  */
 export function useSeniorVaultTotalAssets() {
@@ -196,28 +213,132 @@ export function useWithdrawFromSeniorVault() {
 
 /**
  * Hook to calculate claimable yield for Senior vault
- * Yield = convertToAssets(shares) - shares
+ * Calculates real-time yield estimation based on time elapsed and APY
  */
 export function useSeniorVaultClaimableYield() {
   const { address } = useAccount();
   const { balance: shares } = useSeniorVaultBalance();
+  const { totalSupply } = useSeniorVaultTotalSupply();
+  const { totalPrincipal: seniorPrincipal } = useSeniorVaultTotalPrincipal();
 
-  const {
-    data: assets,
-    isLoading,
-    error,
-  } = useReadContract({
+  // Get last harvest time and current senior rate from CoreVault
+  const { data: lastHarvestTime } = useReadContract({
+    address: ADDRESSES.coreVault,
+    abi: [
+      {
+        type: 'function',
+        name: 'lastHarvestTime',
+        inputs: [],
+        outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+        stateMutability: 'view',
+      },
+    ] as const,
+    functionName: 'lastHarvestTime',
+  });
+
+  const { data: stats } = useReadContract({
+    address: ADDRESSES.coreVault,
+    abi: [
+      {
+        type: 'function',
+        name: 'getStats',
+        inputs: [],
+        outputs: [
+          {
+            name: '_seniorPrincipal',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+          {
+            name: '_juniorPrincipal',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+          { name: 'totalAssets', type: 'uint256', internalType: 'uint256' },
+          {
+            name: 'currentSeniorRate',
+            type: 'uint256',
+            internalType: 'uint256',
+          },
+          { name: 'juniorRatio', type: 'uint256', internalType: 'uint256' },
+          { name: 'isHealthy', type: 'bool', internalType: 'bool' },
+        ],
+        stateMutability: 'view',
+      },
+    ] as const,
+    functionName: 'getStats',
+  });
+
+  // Calculate time elapsed since last harvest
+  const currentTime = BigInt(Math.floor(Date.now() / 1000));
+  const timeElapsed =
+    lastHarvestTime && lastHarvestTime > BigInt(0)
+      ? currentTime - (lastHarvestTime as bigint)
+      : BigInt(0);
+
+  // Calculate expected total senior yield
+  // Formula: (seniorPrincipal * currentSeniorRate * timeElapsed) / (365 days * 10000)
+  let expectedTotalYield = BigInt(0);
+  if (stats && Array.isArray(stats) && timeElapsed > BigInt(0)) {
+    const principal = stats[0] as bigint; // seniorPrincipal
+    const rate = stats[3] as bigint; // currentSeniorRate in basis points
+    const SECONDS_PER_YEAR = BigInt(365 * 24 * 60 * 60); // 31536000
+    const BASIS_POINTS = BigInt(10000);
+
+    expectedTotalYield =
+      (principal * rate * timeElapsed) / (SECONDS_PER_YEAR * BASIS_POINTS);
+  }
+
+  // Calculate user's proportional share of the yield
+  let claimableYield = BigInt(0);
+  if (
+    shares &&
+    totalSupply &&
+    totalSupply > BigInt(0) &&
+    expectedTotalYield > BigInt(0)
+  ) {
+    claimableYield = (shares * expectedTotalYield) / totalSupply;
+  }
+
+  // Also check convertToAssets for any already-distributed yield
+  const { data: assets } = useReadContract({
     address: ADDRESSES.seniorVault,
     abi: SeniorVaultABI,
     functionName: 'convertToAssets',
     args: shares ? [shares] : undefined,
   });
 
-  const claimableYield = assets && shares ? assets - shares : BigInt(0);
+  // If convertToAssets shows yield (assets > shares), use that instead
+  const distributedYield = assets && shares ? assets - shares : BigInt(0);
+  if (distributedYield > claimableYield) {
+    claimableYield = distributedYield;
+  }
+
+  console.log('[Senior Claimable Yield Debug]');
+  console.log('  Address:', address);
+  console.log('  Shares:', shares?.toString());
+  console.log('  Total Supply:', totalSupply?.toString());
+  console.log(
+    '  Senior Principal:',
+    stats ? (stats[0] as bigint).toString() : 'undefined',
+  );
+  console.log(
+    '  Current Senior Rate (bps):',
+    stats ? (stats[3] as bigint).toString() : 'undefined',
+  );
+  console.log('  Last Harvest Time:', lastHarvestTime?.toString());
+  console.log('  Time Elapsed (seconds):', timeElapsed.toString());
+  console.log(
+    '  Expected Total Yield (calculated):',
+    expectedTotalYield.toString(),
+  );
+  console.log('  Claimable Yield:', claimableYield.toString());
+  console.log('  Distributed Yield:', distributedYield.toString());
+  console.log('  Assets from convertToAssets:', assets?.toString());
 
   return {
     claimableYield,
-    isLoading,
-    error,
+    isLoading: false,
+    error: null,
   };
 }

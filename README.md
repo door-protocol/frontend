@@ -118,16 +118,16 @@ Protocol Yields (e.g., 12% APY)
 
 | Contract              | Address                                                                                                                                |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| **MockUSDC**          | [`0xa9fd59bf5009da2d002a474309ca38a8d8686f6a`](https://explorer.sepolia.mantle.xyz/address/0xa9fd59bf5009da2d002a474309ca38a8d8686f6a) |
-| **MockMETH**          | [`0xac8fc1d5593ada635c5569e35534bfab1ab2fedc`](https://explorer.sepolia.mantle.xyz/address/0xac8fc1d5593ada635c5569e35534bfab1ab2fedc) |
-| **SeniorVault**       | [`0x03f4903c3fcf0cb23bee2c11531afb8a1307ce91`](https://explorer.sepolia.mantle.xyz/address/0x03f4903c3fcf0cb23bee2c11531afb8a1307ce91) |
-| **JuniorVault**       | [`0x694c667c3b7ba5620c68fe1cc3b308eed26afc6e`](https://explorer.sepolia.mantle.xyz/address/0x694c667c3b7ba5620c68fe1cc3b308eed26afc6e) |
-| **CoreVault**         | [`0x8d3ed9a02d3f1e05f68a306037edaf9a54a16105`](https://explorer.sepolia.mantle.xyz/address/0x8d3ed9a02d3f1e05f68a306037edaf9a54a16105) |
-| **EpochManager**      | [`0xdc0f912aa970f2a89381985a8e0ea3128e754748`](https://explorer.sepolia.mantle.xyz/address/0xdc0f912aa970f2a89381985a8e0ea3128e754748) |
-| **SafetyModule**      | [`0xab5fd152973f5430991df6c5b74a5559ffa0d189`](https://explorer.sepolia.mantle.xyz/address/0xab5fd152973f5430991df6c5b74a5559ffa0d189) |
-| **DOORRateOracle**    | [`0xe76e27759b2416ec7c9ddf8ed7a58e61030876a4`](https://explorer.sepolia.mantle.xyz/address/0xe76e27759b2416ec7c9ddf8ed7a58e61030876a4) |
-| **VaultStrategy**     | [`0xdd84c599f3b9a12d7f8e583539f11a3e1d9224df`](https://explorer.sepolia.mantle.xyz/address/0xdd84c599f3b9a12d7f8e583539f11a3e1d9224df) |
-| **MockYieldStrategy** | [`0x403e548ec79ade195db7e7abaa0eb203bbaa1db0`](https://explorer.sepolia.mantle.xyz/address/0x403e548ec79ade195db7e7abaa0eb203bbaa1db0) |
+| **MockUSDC**          | [`0xbadbbDb50f5F0455Bf6E4Dd6d4B5ee664D07c109`](https://explorer.sepolia.mantle.xyz/address/0xbadbbDb50f5F0455Bf6E4Dd6d4B5ee664D07c109) |
+| **MockMETH**          | [`0x374962241A369F1696EF88C10beFe4f40C646592`](https://explorer.sepolia.mantle.xyz/address/0x374962241A369F1696EF88C10beFe4f40C646592) |
+| **SeniorVault**       | [`0x766624E3E59a80Da9801e9b71994cb927eB7F260`](https://explorer.sepolia.mantle.xyz/address/0x766624E3E59a80Da9801e9b71994cb927eB7F260) |
+| **JuniorVault**       | [`0x8d1fBEa28CC47959bd94ece489cb1823BeB55075`](https://explorer.sepolia.mantle.xyz/address/0x8d1fBEa28CC47959bd94ece489cb1823BeB55075) |
+| **CoreVault**         | [`0x6D418348BFfB4196D477DBe2b1082485F5aE5164`](https://explorer.sepolia.mantle.xyz/address/0x6D418348BFfB4196D477DBe2b1082485F5aE5164) |
+| **EpochManager**      | [`0x7cbdd2d816C4d733b36ED131695Ac9cb17684DC3`](https://explorer.sepolia.mantle.xyz/address/0x7cbdd2d816C4d733b36ED131695Ac9cb17684DC3) |
+| **SafetyModule**      | [`0xE2fa3596C8969bbd28b3dda515BABb268343df4B`](https://explorer.sepolia.mantle.xyz/address/0xE2fa3596C8969bbd28b3dda515BABb268343df4B) |
+| **DOORRateOracle**    | [`0x738c765fB734b774EBbABc9eDb5f099c46542Ee4`](https://explorer.sepolia.mantle.xyz/address/0x738c765fB734b774EBbABc9eDb5f099c46542Ee4) |
+| **VaultStrategy**     | [`0xf9579CE4D63174b1f0f5bCB9d42255BDd07a6374`](https://explorer.sepolia.mantle.xyz/address/0xf9579CE4D63174b1f0f5bCB9d42255BDd07a6374) |
+| **MockVaultStrategy** | [`0x6dc9D97D7d17B01Eb8D6669a6feF05cc3D3b70d6`](https://explorer.sepolia.mantle.xyz/address/0x6dc9D97D7d17B01Eb8D6669a6feF05cc3D3b70d6) |
 
 **Network**: Mantle Sepolia Testnet (Chain ID: 5003)
 
@@ -169,11 +169,19 @@ npm >= 9.0.0 or yarn >= 1.22.0
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository with submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/door-protocol/frontend.git
+cd frontend
+```
+
+Or if you already cloned it:
 
 ```bash
 git clone https://github.com/door-protocol/frontend.git
 cd frontend
+git submodule update --init --recursive
 ```
 
 2. Install dependencies:
@@ -182,6 +190,30 @@ cd frontend
 npm install
 # or
 yarn install
+```
+
+### Contract ABIs
+
+The repository includes the [door-protocol/contract](https://github.com/door-protocol/contract) repository as a git submodule in `external/door-contract/`. The `abi/` folder in the root is a symbolic link to `external/door-contract/abi/` for easy access.
+
+**ABI Files Location**: `abi/` (symlink to `external/door-contract/abi/`)
+
+- `CoreVault.json`
+- `DOORRateOracle.json`
+- `EpochManager.json`
+- `JuniorVault.json`
+- `SeniorVault.json`
+- `SafetyModule.json`
+- `VaultStrategy.json`
+- `MockUSDC.json`
+- `MockMETH.json`
+
+**Update Contract ABIs**:
+
+```bash
+cd external/door-contract
+git pull origin main
+cd ../..
 ```
 
 ### Environment Setup
@@ -271,6 +303,27 @@ frontend/
 │   └── mock/                       # Mock data for development
 │       └── vaultData.ts
 │
+├── external/                        # External dependencies
+│   └── door-contract/              # Git submodule (door-protocol/contract)
+│       ├── abi/                    # Contract ABIs
+│       ├── src/                    # Solidity source code
+│       └── README.md               # Contract documentation
+│
+├── keeper-bot/                      # Automated epoch keeper bot
+│   ├── src/
+│   │   ├── index.ts                # Main bot logic
+│   │   ├── config.ts               # Configuration loader
+│   │   └── abi.ts                  # EpochManager ABI
+│   ├── .env                        # Environment variables (not in git)
+│   ├── .env.example                # Environment template
+│   ├── package.json                # Keeper bot dependencies
+│   └── README.md                   # Keeper bot documentation
+│
+├── .github/
+│   └── workflows/
+│       └── keeper-bot.yml          # GitHub Actions workflow (runs every 5 min)
+│
+├── abi/                            # Symlink → external/door-contract/abi/
 ├── public/                          # Static assets
 └── package.json
 ```
@@ -324,6 +377,50 @@ frontend/
 - Junior capital ratio history
 - Protocol statistics
 - Export data functionality
+
+## 🤖 Keeper Bot Automation
+
+The protocol includes an automated keeper bot that manages epoch processing via GitHub Actions.
+
+### What It Does
+
+- **Automatic Epoch Processing**: Runs every 5 minutes to check if the current epoch has ended
+- **Smart Execution**: Only processes epochs when needed (after `endTime` has passed)
+- **Zero Infrastructure Cost**: Runs on GitHub Actions free tier (2000 minutes/month)
+- **Secure**: Private keys stored in GitHub Secrets (encrypted)
+
+### How It Works
+
+```
+Every 5 minutes:
+  1. Check current epoch status
+  2. If epoch ended → Call processEpoch()
+     - Harvest yield from CoreVault
+     - Process withdrawal requests
+     - Distribute penalties
+     - Start new epoch
+  3. If still active → Wait for next check
+```
+
+### Quick Setup
+
+1. **Add Private Key to GitHub Secrets**
+   - Go to Repository Settings → Secrets → Actions
+   - Add `KEEPER_PRIVATE_KEY` with your keeper wallet's private key
+
+2. **Enable GitHub Actions**
+   - Settings → Actions → General
+   - Allow all actions and reusable workflows
+
+3. **Done!** The bot runs automatically every 5 minutes
+
+For detailed setup instructions, see [`keeper-bot/README.md`](keeper-bot/README.md)
+
+### Monitoring
+
+- View execution logs in the **Actions** tab on GitHub
+- Check transaction history on [Mantle Sepolia Explorer](https://explorer.sepolia.mantle.xyz/address/0x7cbdd2d816C4d733b36ED131695Ac9cb17684DC3)
+- Monitor epoch status on the [Dashboard](https://door-protocol-frontend.vercel.app/dashboard)
 
 ## 🎯 Key Development Features
 

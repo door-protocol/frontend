@@ -80,7 +80,7 @@ export function Footer() {
         <div className="mt-10 border-t pt-6">
           <div className="flex flex-col items-center justify-center gap-3 text-center">
             <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground">
-              <span>Powered by Treehouse DOR</span>
+              <span>Powered by DOOR Rate Oracle</span>
               <span>•</span>
               <span>Secured by RWA</span>
               <span>•</span>

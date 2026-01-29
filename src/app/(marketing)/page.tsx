@@ -110,7 +110,7 @@ export default function Home() {
           >
             <div className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              <span>Powered by Treehouse DOR</span>
+              <span>Powered by DOOR Rate Oracle</span>
             </div>
             <span className="hidden sm:inline">•</span>
             <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function Home() {
               {stats.seniorAPY}%
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Senior Target APY
+              Senior Current APY
             </div>
           </div>
           <div className="group">
@@ -272,7 +272,7 @@ export default function Home() {
               {stats.juniorAPY}%
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Junior Current APY
+              Junior Estimated APY
             </div>
           </div>
           <div className="group">
@@ -288,7 +288,7 @@ export default function Home() {
               {stats.dor}%
             </div>
             <div className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Current DOR Rate
+              DOR Benchmark Rate
             </div>
           </div>
         </div>
